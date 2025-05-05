@@ -19,7 +19,7 @@ def save_image(image, image_folder, index):
 def main(image_folder, excel_fname, image_mask_fname ):
     missing = []
     df = pd.read_excel(xcel_fname)
-    data_mask = pd.Series([True for _ in range(len(df))])
+    data_mask = pd.Series([True for _ in range(len(df))], dtype="boolean")
     for i in range(len(df)): #len(df)
         try:
             image = get_image(df.loc[i, "POINT_X"], df.loc[i, "POINT_Y"])
@@ -31,7 +31,7 @@ def main(image_folder, excel_fname, image_mask_fname ):
             missing.append(i)
             data_mask.iloc[i] = False
     print("Missing:", missing)
-    data_mask.to_csv(image_mask_fname)
+    data_mask.to_csv(image_mask_fname, index = False)
         
         
 

@@ -1,4 +1,4 @@
-import cv2
+from PIL import Image
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -6,8 +6,8 @@ from sklearn.model_selection import train_test_split
 RANDOM_STATE = 250
 
 def load_images(image_folder, len_dataset):
-    image_array = np.array(cv2.imread(image_folder + f"image_{i}.jpg") for i in range(len_dataset))
-    return image_array
+    image_list = [Image.open(image_folder + f"image_{i}.jpg") for i in range(len_dataset)]
+    return image_list
 
 def read_excel(excel_fname):
     df = pd.read_excel(excel_fname) #df = pd.read_excel(excel_fname, keep_default_na = False) stop "NA" being auto converted to NaN
@@ -22,7 +22,7 @@ def read_excel(excel_fname):
 
 def clear_lost_images(df, image_mask_fname):
     image_mask = pd.read_csv(image_mask_fname)
-    df = df[image_mask.iloc[:,0]]
+    df = df.loc[image_mask.iloc[:,0]]
     return df
 
 def main(image_folder, data_folder, excel_fname, image_mask_fname):

@@ -47,7 +47,7 @@ def df_to_hfds_structure_type(df, mode):
         for i in range(len(labels)):
             df_classes.append(df_data.loc[df_data["structure_type"] == i])
         max_index = max(range(len(labels)), key = lambda x: len(df_classes[x]))
-        df_classes[max_index] = df_classes[max_index].sample(frac = 0.5) #To reduce size, change this once data efficient method is found
+        #df_classes[max_index] = df_classes[max_index].sample(frac = 0.5) #To reduce size, change this once data efficient method is found
         for i in range(len(labels)):
             if i == max_index:
                 continue
@@ -56,10 +56,10 @@ def df_to_hfds_structure_type(df, mode):
         print("train_size (upsampled): ", len(df_data))
         print(df_data["structure_type"].value_counts())
 
-    ds = Dataset.from_dict({"image": np.array(df_data["image"]),
-                             "structure_type": np.array(df_data["structure_type"])}, 
+    ds = Dataset.from_dict({"image": df_data["image"],
+                             "structure_type": df_data["structure_type"]}, 
                              
-                             features = datasets.Features({"image": datasets.Array3D(shape=(400, 400, 3), dtype='float32'),
+                             features = datasets.Features({"image": datasets.Image(),
                                                            "structure_type": datasets.Value(dtype="uint8")}))
     return ds
 
@@ -87,6 +87,8 @@ image_processor = AutoImageProcessor.from_pretrained(checkpoint)
 def preprocess_maker(processor):
     size = (processor.size["height"], processor.size["width"])
     def preprocess(example_batch):
+        example_batch["image"] = [np.array(image) for image in example_batch["image"]]
+        
         example_batch["image"] = tf.image.resize(example_batch["image"], size)
         example_batch["image"] = [tf.transpose(image) for image in example_batch["image"]]
         return example_batch
