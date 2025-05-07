@@ -11,7 +11,7 @@ Switched from pure TensorFlow to Huggingface because ViT is not a default model 
 For missing images, save white squares and save missing image mask as csv file. In create_datasets.py, remove missing records and save.
 
 ViT is classifying everything as detached (Most common class). Dataset is very imbalanced. Implemented upsampling to fix this. Class Weights did nothing.
-Couldn't find upsampling method in Huggingface. Using Pandas Upsampling method. Fixed this. Accuracy at 50%
+Couldn't find upsampling method in Huggingface. Using Pandas Upsampling method. Fixed this. Accuracy at 50% (image memory inefficiency meant I used less data)
 
 Switched from storing images as ND-arrays to PIL objects because former was too memory expensive (for full dataset) and would kill program in the DataFrame to HF dataset transfer.
 
@@ -29,4 +29,16 @@ Accuracy is 34%, without upsampling. Still didn't classify anything to 3 of the 
 
 With upsampling, building_conditions accuracy goes to 28%, but at least it's using all the classes. 
 This might be too hard to classify on. Maybe it's hard to tell the difference between good and very good, and the visual features may be subtle in general.
+
+Switching to pytorch because more models are implemented there for huggingface.
+
+"Could not infer dtype of JpegImageFile" error. In the DataCollator.
+Probably a version control error.
+I think the DataCollator is trying to infer the dtype but torch cannot process PIL images. It's doing this inference without running the transforms.
+Could try converting dataset to torch tensors.
+Fixed. Somehow changing with_transforms to set_transforms fixed it.
+
+Pytorch structure_type.py got 74% for some reason. Maybe because it used the full dataset.
+
+Train Tensorflow to see how well it does before branch merging.
 
