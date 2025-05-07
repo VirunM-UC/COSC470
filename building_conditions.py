@@ -16,51 +16,50 @@ from tensorflow import keras
 
 #data to hf dataset
 #labels = ["brick", "cinder", "steel", "tile", "under construction", "wood"]
-labels = ["attached", "semi-detached", "detached"] #attached: 230 (18%), semi-detached: 102 (8%), detached: 941 (73%)
+labels = ["very poor", "poor", "fair", "good", "very good"] 
 label2id, id2label = dict(), dict()
 for i, label in enumerate(labels):
     label2id[label] = str(i)
     id2label[str(i)] = label
 
 
-def df_to_hfds_structure_type(df, mode):
+def df_to_hfds_building_conditions(df, mode):
     """
-    Pandas dataframe to huggingface dataset for classifying structure_type.
+    Pandas dataframe to huggingface dataset for classifying building_conditions.
     Args:
     df: dataframe
     mode: string, either "train" or "validate"
     """
-    df = df[~df["structure_type"].isna()] #filter NaNs
-    structure_types = df["structure_type"].apply(lambda x: int(label2id[x])).astype("uint8")
+    df = df[~df["building_conditions"].isna()] #filter NaNs
+    building_conditions = df["building_conditions"].apply(lambda x: int(label2id[x])).astype("uint8")
     images = df.loc[:, "image"]
-    df_data = pd.DataFrame({"image": images, "structure_type": structure_types})
+    df_data = pd.DataFrame({"image": images, "building_conditions": building_conditions})
     
     if mode == "train":
         print("train size (original): ", len(df_data))
     elif mode == "validate":
         print("validate size: ", len(df_data))
-    print(df_data["structure_type"].value_counts())
+    print(df_data["building_conditions"].value_counts())
 
-    #Upsampling
     if mode == "train":
         df_classes = []
         for i in range(len(labels)):
-            df_classes.append(df_data.loc[df_data["structure_type"] == i])
+            df_classes.append(df_data.loc[df_data["building_conditions"] == i])
         max_index = max(range(len(labels)), key = lambda x: len(df_classes[x]))
-        #df_classes[max_index] = df_classes[max_index].sample(frac = 0.5) #To reduce size, change this once data efficient method is found
         for i in range(len(labels)):
             if i == max_index:
                 continue
             df_classes[i] = df_classes[i].sample(n = len(df_classes[max_index]), replace=True)
         df_data = pd.concat(df_classes)
         print("train_size (upsampled): ", len(df_data))
-        print(df_data["structure_type"].value_counts())
+        print(df_data["building_conditions"].value_counts())
+
 
     ds = Dataset.from_dict({"image": df_data["image"],
-                             "structure_type": df_data["structure_type"]}, 
+                             "building_conditions": df_data["building_conditions"]}, 
                              
                              features = datasets.Features({"image": datasets.Image(),
-                                                           "structure_type": datasets.Value(dtype="uint8")}))
+                                                           "building_conditions": datasets.Value(dtype="uint8")}))
     return ds
 
 
@@ -76,12 +75,13 @@ df_train = load_data("data/", "training.pkl")
 df_validate = load_data("data/", "validation.pkl")
 
 
-hf_train = df_to_hfds_structure_type(df_train, mode = "train")
-hf_validate = df_to_hfds_structure_type(df_validate, mode = "validate")
+hf_train = df_to_hfds_building_conditions(df_train, mode = "train")
+hf_validate = df_to_hfds_building_conditions(df_validate, mode = "validate")
 data_collator = DefaultDataCollator(return_tensors="tf")
 
 #preprocessor
-checkpoint = "google/vit-base-patch16-224-in21k"
+checkpoint = "google/vit-base-patch16-224-in21k" #ViT
+#checkpoint = "microsoft/swinv2-base-patch4-window16-256" #Swin Transformer V2 (not implemented in TensorFlow)
 image_processor = AutoImageProcessor.from_pretrained(checkpoint)
 
 def preprocess_maker(processor):
@@ -141,10 +141,10 @@ model = TFAutoModelForImageClassification.from_pretrained(
 
 #hf to tf dataset
 tf_train_dataset = hf_train.to_tf_dataset(
-    columns="image", label_cols="structure_type", shuffle=True, batch_size=batch_size, collate_fn=data_collator
+    columns="image", label_cols="building_conditions", shuffle=True, batch_size=batch_size, collate_fn=data_collator
 )
 tf_eval_dataset = hf_validate.to_tf_dataset(
-    columns="image", label_cols="structure_type", shuffle=True, batch_size=batch_size, collate_fn=data_collator
+    columns="image", label_cols="building_conditions", shuffle=True, batch_size=batch_size, collate_fn=data_collator
 )
 
 #loss
@@ -157,7 +157,5 @@ from transformers.keras_callbacks import KerasMetricCallback
 metric_callback = KerasMetricCallback(metric_fn=compute_metrics, eval_dataset=tf_eval_dataset)
 callbacks = [metric_callback]
 
-#class_weight = {0: (0.5/0.18), 1: (0.5/0.73), 2: (0.5/0.08)} #automate this
-model.fit(tf_train_dataset, validation_data=tf_eval_dataset, epochs=num_epochs, callbacks=callbacks)
 
-#training_records.shuffle(buffer_size=256).batch(model.batch_size, drop_remainder=False)
+model.fit(tf_train_dataset, validation_data=tf_eval_dataset, epochs=num_epochs, callbacks=callbacks)

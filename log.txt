@@ -1,0 +1,32 @@
+Excel Dataset: 1484 records.
+attached: 230 (18%), semi-detached: 102 (8%), detached: 941 (73%)
+commercial: 266, residential: 1101, industrial: 36, natural: 31, agricultural: 22
+
+Started with structure_type because it had clean unordered classes with each data point having one unique class. Also it seems the most fruitful for visual classification.
+
+Chose to store images and data together for easy loading. Used Pandas Dataframe and pickled it.
+
+Switched from pure TensorFlow to Huggingface because ViT is not a default model in TF so loading it would have required me to learn more anyway, so I'd rather learn something higher level.
+
+For missing images, save white squares and save missing image mask as csv file. In create_datasets.py, remove missing records and save.
+
+ViT is classifying everything as detached (Most common class). Dataset is very imbalanced. Implemented upsampling to fix this. Class Weights did nothing.
+Couldn't find upsampling method in Huggingface. Using Pandas Upsampling method. Fixed this. Accuracy at 50%
+
+Switched from storing images as ND-arrays to PIL objects because former was too memory expensive (for full dataset) and would kill program in the DataFrame to HF dataset transfer.
+
+Survey:
+A frequent problem is unbalanced datasets.
+A frequent practice is segmenting before classifying.
+
+
+I made structure_type and building_conditions different scripts.
+If it was just a matter of running uncustomised models on the data, then it would make sense to just have one script or one script with a data processing module.
+However, if we want to customize based on each attribute, it's probably best to have different scripts.
+
+building_conditions was chosen next because it had the least imbalanced data. It is ordinal data though.
+Accuracy is 34%, without upsampling. Still didn't classify anything to 3 of the 5 classes.
+
+With upsampling, building_conditions accuracy goes to 28%, but at least it's using all the classes. 
+This might be too hard to classify on. Maybe it's hard to tell the difference between good and very good, and the visual features may be subtle in general.
+
