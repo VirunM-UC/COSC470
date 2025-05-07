@@ -4,12 +4,10 @@ from datasets import Dataset
 from transformers import DefaultDataCollator
 import evaluate
 
-import tensorflow as tf
 import numpy as np
 import pandas as pd
 import random
 import math
-from tensorflow import keras
 
 #def data_map(feature_dict):
 #   return (feature_dict["image"], feature_dict["building_material"])
@@ -56,10 +54,10 @@ def df_to_hfds_structure_type(df, mode):
         print(df_data["structure_type"].value_counts())
 
     ds = Dataset.from_dict({"image": df_data["image"],
-                             "structure_type": df_data["structure_type"]}, 
+                             "label": df_data["structure_type"]}, 
                              
                              features = datasets.Features({"image": datasets.Image(),
-                                                           "structure_type": datasets.Value(dtype="uint8")}))
+                                                           "label": datasets.Value(dtype="uint8")}))
     return ds
 
 
@@ -77,25 +75,28 @@ df_validate = load_data("data/", "validation.pkl")
 
 hf_train = df_to_hfds_structure_type(df_train, mode = "train")
 hf_validate = df_to_hfds_structure_type(df_validate, mode = "validate")
-data_collator = DefaultDataCollator(return_tensors="tf")
 
 #preprocessor
 checkpoint = "google/vit-base-patch16-224-in21k" #ViT
 #checkpoint = "microsoft/swinv2-base-patch4-window16-256" #Swin Transformer V2 (not implemented in TensorFlow)
 image_processor = AutoImageProcessor.from_pretrained(checkpoint)
 
+from torchvision.transforms import Resize, Compose, Normalize, ToTensor
+
 def preprocess_maker(processor):
+    normalize = Normalize(mean=processor.image_mean, std=processor.image_std)
     size = (processor.size["height"], processor.size["width"])
-    def preprocess(example_batch):
-        example_batch["image"] = [np.array(image) for image in example_batch["image"]]
-        
-        example_batch["image"] = tf.image.resize(example_batch["image"], size)
-        example_batch["image"] = [tf.transpose(image) for image in example_batch["image"]]
-        return example_batch
-    return preprocess
+    _transforms = Compose([Resize(size), ToTensor(), normalize])
+    def transforms(examples):
+        examples["pixel_values"] = [_transforms(img.convert("RGB")) for img in examples["image"]]
+        del examples["image"]
+        return examples
+    
+    return transforms
 
 hf_train.set_transform(preprocess_maker(image_processor))
 hf_validate.set_transform(preprocess_maker(image_processor))
+data_collator = DefaultDataCollator()
 
 #metrics
 accuracy = evaluate.load("accuracy")
@@ -110,52 +111,50 @@ def compute_metrics(eval_pred):
     prec_result = dict()
     for index, value in enumerate(prec["precision"]):
         prec_result[f"precision_{index}"] = value
-    rec_result = recall.compute(predictions=predictions, references=labels, average=None)
+    rec_result = recall.compute(predictions=predictions, references=labels, average="macro")
     result = acc_result | (prec_result | rec_result)
     return result
 
 
 
-#hyperparameters
-from transformers import create_optimizer
-batch_size = 16
-num_epochs = 5
-num_train_steps = math.ceil(len(hf_train) / batch_size) * num_epochs #?
-learning_rate = 3e-5
-weight_decay_rate = 0.01
-optimizer, lr_schedule = create_optimizer(
-    init_lr=learning_rate,
-    num_train_steps=num_train_steps,
-    weight_decay_rate=weight_decay_rate,
-    num_warmup_steps=0,
-)
-
+from transformers import AutoModelForImageClassification, TrainingArguments, Trainer
 
 #model
-from transformers import TFAutoModelForImageClassification
-model = TFAutoModelForImageClassification.from_pretrained(
+model = AutoModelForImageClassification.from_pretrained(
     checkpoint,
+    num_labels=len(labels),
     id2label=id2label,
     label2id=label2id,
 )
 
-#hf to tf dataset
-tf_train_dataset = hf_train.to_tf_dataset(
-    columns="image", label_cols="structure_type", shuffle=True, batch_size=batch_size, collate_fn=data_collator
+
+#hyperparameters
+training_args = TrainingArguments(
+    output_dir="model",
+    remove_unused_columns=False,
+    eval_strategy="epoch",
+    save_strategy="epoch",
+    learning_rate=5e-5,
+    per_device_train_batch_size=16,
+    gradient_accumulation_steps=4,
+    per_device_eval_batch_size=16,
+    num_train_epochs=3,
+    warmup_ratio=0.1,
+    logging_steps=10,
+    load_best_model_at_end=True,
+    metric_for_best_model="accuracy",
+    push_to_hub=False,
+
 )
-tf_eval_dataset = hf_validate.to_tf_dataset(
-    columns="image", label_cols="structure_type", shuffle=True, batch_size=batch_size, collate_fn=data_collator
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    data_collator=data_collator,
+    train_dataset=hf_train,
+    eval_dataset=hf_validate,
+    processing_class=image_processor,
+    compute_metrics=compute_metrics,
 )
 
-#loss
-from tensorflow.keras.losses import SparseCategoricalCrossentropy
-loss = SparseCategoricalCrossentropy(from_logits=True)
-model.compile(optimizer=optimizer, loss=loss)
-
-#callbacks
-from transformers.keras_callbacks import KerasMetricCallback
-metric_callback = KerasMetricCallback(metric_fn=compute_metrics, eval_dataset=tf_eval_dataset)
-callbacks = [metric_callback]
-
-
-model.fit(tf_train_dataset, validation_data=tf_eval_dataset, epochs=num_epochs, callbacks=callbacks)
+trainer.train()
