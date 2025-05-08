@@ -77,8 +77,8 @@ hf_train = df_to_hfds_structure_type(df_train, mode = "train")
 hf_validate = df_to_hfds_structure_type(df_validate, mode = "validate")
 
 #preprocessor
-checkpoint = "google/vit-base-patch16-224-in21k" #ViT
-#checkpoint = "microsoft/swinv2-base-patch4-window16-256" #Swin Transformer V2 (not implemented in TensorFlow)
+#checkpoint = "google/vit-base-patch16-224-in21k" #ViT
+checkpoint = "microsoft/swinv2-base-patch4-window16-256" #Swin Transformer V2
 image_processor = AutoImageProcessor.from_pretrained(checkpoint)
 
 from torchvision.transforms import Resize, Compose, Normalize, ToTensor
@@ -122,6 +122,7 @@ from transformers import AutoModelForImageClassification, TrainingArguments, Tra
 #model
 model = AutoModelForImageClassification.from_pretrained(
     checkpoint,
+    ignore_mismatched_sizes = True,
     num_labels=len(labels),
     id2label=id2label,
     label2id=label2id,

@@ -11,11 +11,7 @@ import random
 import math
 from tensorflow import keras
 
-#def data_map(feature_dict):
-#   return (feature_dict["image"], feature_dict["building_material"])
-
-#data to hf dataset
-#labels = ["brick", "cinder", "steel", "tile", "under construction", "wood"]
+#ordinal data: Maybe we could use that somehow.
 labels = ["very poor", "poor", "fair", "good", "very good"] 
 label2id, id2label = dict(), dict()
 for i, label in enumerate(labels):
