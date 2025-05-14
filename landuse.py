@@ -9,37 +9,37 @@ import pandas as pd
 import random
 import math
 
-#In TensorFlow. Switch to PyTorch.
-#ordinal data: Maybe we could use that somehow.
-labels = ["very poor", "poor", "fair", "good", "very good"] 
+labels = ["residential", "commercial"] 
 label2id, id2label = dict(), dict()
 for i, label in enumerate(labels):
     label2id[label] = str(i)
     id2label[str(i)] = label
 
 
-def df_to_hfds_building_conditions(df, mode):
+def df_to_hfds_landuse(df, mode):
     """
-    Pandas dataframe to huggingface dataset for classifying building_conditions.
+    Pandas dataframe to huggingface dataset for classifying landuse.
     Args:
     df: dataframe
     mode: string, either "train" or "validate"
     """
-    df = df[~df["building_conditions"].isna()] #filter NaNs
-    building_conditions = df["building_conditions"].map(lambda x: int(label2id[x])).astype("uint8")
+
+    df = df[df["landuse"].map(lambda x: (x in labels))] #filter everything that is not in labels
+    landuses = df["landuse"].map(lambda x: int(label2id[x])).astype("uint8")
     images = df.loc[:, "image"]
-    df_data = pd.DataFrame({"image": images, "building_conditions": building_conditions})
+    df_data = pd.DataFrame({"image": images, "landuse": landuses})
     
     if mode == "train":
         print("train size (original): ", len(df_data))
     elif mode == "validate":
         print("validate size: ", len(df_data))
-    print(df_data["building_conditions"].value_counts())
+    print(df_data["landuse"].value_counts())
 
+    #Upsampling
     if mode == "train":
         df_classes = []
         for i in range(len(labels)):
-            df_classes.append(df_data.loc[df_data["building_conditions"] == i])
+            df_classes.append(df_data.loc[df_data["landuse"] == i])
         max_index = max(range(len(labels)), key = lambda x: len(df_classes[x]))
         for i in range(len(labels)):
             if i == max_index:
@@ -47,16 +47,14 @@ def df_to_hfds_building_conditions(df, mode):
             df_classes[i] = df_classes[i].sample(n = len(df_classes[max_index]), replace=True)
         df_data = pd.concat(df_classes)
         print("train_size (upsampled): ", len(df_data))
-        print(df_data["building_conditions"].value_counts())
-
+        print(df_data["landuse"].value_counts())
 
     ds = Dataset.from_dict({"image": df_data["image"],
-                             "label": df_data["building_conditions"]}, 
+                             "label": df_data["landuse"]}, 
                              
                              features = datasets.Features({"image": datasets.Image(),
                                                            "label": datasets.Value(dtype="uint8")}))
     return ds
-
 
 
 
@@ -71,8 +69,8 @@ df_train = load_data("data/", "training.pkl")
 df_validate = load_data("data/", "validation.pkl")
 
 
-hf_train = df_to_hfds_building_conditions(df_train, mode = "train")
-hf_validate = df_to_hfds_building_conditions(df_validate, mode = "validate")
+hf_train = df_to_hfds_landuse(df_train, mode = "train")
+hf_validate = df_to_hfds_landuse(df_validate, mode = "validate")
 
 #preprocessor
 checkpoint = "google/vit-base-patch16-224-in21k" #ViT

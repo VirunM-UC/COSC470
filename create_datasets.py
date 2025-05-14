@@ -15,8 +15,8 @@ def read_excel(excel_fname):
 
     df.loc[df["structure_type"].map(lambda x: isinstance(x, str)), "structure_type"] = df.loc[df["structure_type"].map(lambda x: isinstance(x, str)), "structure_type"].map(lambda s: s.lower())
 
-    df[["sill_height", "structure_type", "building_conditions", "building_material", "occupancy", "roof_type", "landuse", "slope", "street_description"]] = \
-        df[["sill_height", "structure_type", "building_conditions", "building_material", "occupancy", "roof_type", "landuse", "slope", "street_description"]].astype("category")
+    df[["structure_type", "building_conditions"]] = \
+        df[["structure_type", "building_conditions"]].astype("category")
     
     return df
 

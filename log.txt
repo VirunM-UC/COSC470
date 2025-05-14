@@ -1,6 +1,7 @@
 Excel Dataset: 1484 records.
 attached: 230 (18%), semi-detached: 102 (8%), detached: 941 (73%)
-commercial: 266, residential: 1101, industrial: 36, natural: 31, agricultural: 22
+commercial: 243, residential: 1101, industrial: 36, natural: 31, agricultural: 22, mixed: 22, excluded: 29 (empty, "other", etc)
+brick: 206, cinder: 1098, steel: 20, construction: 48 (including combinations), wood: 32, mixed: 54 (excluding "construction"), excluded: 26 (empty)
 
 Started with structure_type because it had clean unordered classes with each data point having one unique class. Also it seems the most fruitful for visual classification.
 
@@ -62,4 +63,10 @@ ViT on structure_type.py:
 'eval_accuracy': 0.73, 'eval_f1_0': 0.41, 'eval_f1_1': 0.06, 'eval_f1_2': 0.84
 ViT on building_conditions:
 'eval_accuracy': 0.38, 'eval_f1_0': 0.18 'eval_f1_1': 0.31, 'eval_f1_2': 0.22, 'eval_f1_3': 0.36, 'eval_f1_4': 0.54
-ViT on building_materials:
+ViT on landuse:
+'eval_accuracy': 0.82, 'eval_f1_0': 0.90, 'eval_f1_1': 0.4
+
+In landuse, given the small number of records for most classes, I decided to just train it on residential and commercial classes. Pretty low F1-Score regardless.
+
+Changed dataset column dtypes from category to object (for most columns) because the Categories contained garbage that messed with the map method. 
+It was passing the garbage to the label2id dictionary.

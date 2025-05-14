@@ -13,7 +13,7 @@ import math
 #   return (feature_dict["image"], feature_dict["building_material"])
 
 #data to hf dataset
-#labels = ["brick", "cinder", "steel", "tile", "under construction", "wood"]
+#labels = ["brick", "cinder", "steel", "under construction", "wood"]
 labels = ["attached", "semi-detached", "detached"] 
 label2id, id2label = dict(), dict()
 for i, label in enumerate(labels):
@@ -29,7 +29,7 @@ def df_to_hfds_structure_type(df, mode):
     mode: string, either "train" or "validate"
     """
     df = df[~df["structure_type"].isna()] #filter NaNs
-    structure_types = df["structure_type"].apply(lambda x: int(label2id[x])).astype("uint8")
+    structure_types = df["structure_type"].map(lambda x: int(label2id[x])).astype("uint8")
     images = df.loc[:, "image"]
     df_data = pd.DataFrame({"image": images, "structure_type": structure_types})
     
