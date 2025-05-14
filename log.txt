@@ -55,4 +55,11 @@ Fixed with ignore_mismatch_sizes = True.
 SwinV2 on structure_type.
 'eval_loss': 0.82, 'eval_accuracy': 0.72, 'eval_precision_0': 0.5, 'eval_precision_1': 0.16, 'eval_precision_2': 0.79, 'eval_recall': 0.47
 
-These metrics are poor. I'm not looking at recall at all. Maybe I should use F1-score?
+These metrics are poor. I'm going to switch to using F1-score.
+
+PyTorch:
+ViT on structure_type.py:
+'eval_accuracy': 0.73, 'eval_f1_0': 0.41, 'eval_f1_1': 0.06, 'eval_f1_2': 0.84
+ViT on building_conditions:
+'eval_accuracy': 0.38, 'eval_f1_0': 0.18 'eval_f1_1': 0.31, 'eval_f1_2': 0.22, 'eval_f1_3': 0.36, 'eval_f1_4': 0.54
+ViT on building_materials:
