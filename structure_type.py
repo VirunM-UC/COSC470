@@ -77,8 +77,8 @@ hf_train = df_to_hfds_structure_type(df_train, mode = "train")
 hf_validate = df_to_hfds_structure_type(df_validate, mode = "validate")
 
 #preprocessor
-#checkpoint = "google/vit-base-patch16-224-in21k" #ViT
-checkpoint = "microsoft/swinv2-base-patch4-window16-256" #Swin Transformer V2
+checkpoint = "google/vit-base-patch16-224-in21k" #ViT
+#checkpoint = "microsoft/swinv2-base-patch4-window16-256" #Swin Transformer V2
 image_processor = AutoImageProcessor.from_pretrained(checkpoint)
 
 from torchvision.transforms import Resize, Compose, Normalize, ToTensor
@@ -100,31 +100,19 @@ data_collator = DefaultDataCollator()
 
 #metrics
 accuracy = evaluate.load("accuracy")
-precision = evaluate.load("precision")
-recall = evaluate.load("recall")
 f1 = evaluate.load("f1")
 
 def compute_metrics(eval_pred):
     predictions, labels = eval_pred
     predictions = np.argmax(predictions, axis=1)
     acc_result = accuracy.compute(predictions=predictions, references=labels)
-    
-    prec = precision.compute(predictions=predictions, references=labels, average=None, zero_division=0)
-    prec_result = dict()
-    for index, value in enumerate(prec["precision"]):
-        prec_result[f"precision_{index}"] = value
-    
-    rec = recall.compute(predictions=predictions, references=labels, average=None)
-    rec_result = dict()
-    for index, value in enumerate(rec["recall"]):
-        rec_result[f"recall_{index}"] = value
 
     f = f1.compute(predictions=predictions, references=labels, average=None)    
     f_result = dict()
     for index, value in enumerate(f["f1"]):
         f_result[f"f1_{index}"] = value
-
-    result = acc_result | (f_result | (prec_result | rec_result))
+    
+    result = acc_result | f_result
     return result
 
 
