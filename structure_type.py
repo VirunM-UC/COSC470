@@ -102,29 +102,17 @@ data_collator = DefaultDataCollator()
 accuracy = evaluate.load("accuracy")
 precision = evaluate.load("precision")
 recall = evaluate.load("recall")
-f1 = evaluate.load("f1")
 
 def compute_metrics(eval_pred):
     predictions, labels = eval_pred
     predictions = np.argmax(predictions, axis=1)
     acc_result = accuracy.compute(predictions=predictions, references=labels)
-    
     prec = precision.compute(predictions=predictions, references=labels, average=None, zero_division=0)
     prec_result = dict()
     for index, value in enumerate(prec["precision"]):
         prec_result[f"precision_{index}"] = value
-    
-    rec = recall.compute(predictions=predictions, references=labels, average=None)
-    rec_result = dict()
-    for index, value in enumerate(rec["recall"]):
-        rec_result[f"recall_{index}"] = value
-
-    f = f1.compute(predictions=predictions, references=labels, average=None)    
-    f_result = dict()
-    for index, value in enumerate(f["f1"]):
-        f_result[f"f1_{index}"] = value
-
-    result = acc_result | (f_result | (prec_result | rec_result))
+    rec_result = recall.compute(predictions=predictions, references=labels, average="macro")
+    result = acc_result | (prec_result | rec_result)
     return result
 
 
