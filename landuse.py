@@ -73,15 +73,20 @@ hf_train = df_to_hfds_landuse(df_train, mode = "train")
 hf_validate = df_to_hfds_landuse(df_validate, mode = "validate")
 
 #preprocessor
-checkpoint = "google/vit-base-patch16-224-in21k" #ViT
+#checkpoint = "google/vit-base-patch16-224-in21k" #ViT
 #checkpoint = "microsoft/swinv2-base-patch4-window16-256" #Swin Transformer V2
+checkpoint = "facebook/convnext-base-224" #ConvNeXT (base: 350MB)
 image_processor = AutoImageProcessor.from_pretrained(checkpoint)
 
 from torchvision.transforms import Resize, Compose, Normalize, ToTensor
 
 def preprocess_maker(processor):
     normalize = Normalize(mean=processor.image_mean, std=processor.image_std)
-    size = (processor.size["height"], processor.size["width"])
+    size = (
+        image_processor.size["shortest_edge"]
+        if "shortest_edge" in image_processor.size
+        else (image_processor.size["height"], image_processor.size["width"])
+    )
     _transforms = Compose([Resize(size), ToTensor(), normalize])
     def transforms(examples):
         examples["pixel_values"] = [_transforms(img.convert("RGB")) for img in examples["image"]]

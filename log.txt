@@ -59,14 +59,34 @@ SwinV2 on structure_type.
 These metrics are poor. I'm going to switch to using F1-score.
 
 PyTorch:
-ViT on structure_type.py:
+ViT on structure_type:
 'eval_accuracy': 0.73, 'eval_f1_0': 0.41, 'eval_f1_1': 0.06, 'eval_f1_2': 0.84
+SwinV2 on structure_type:
+'eval_accuracy': 0.73, 'eval_f1_0': 0.41, 'eval_f1_1': 0.14, 'eval_f1_2': 0.83
+ConvNeXT on structure_type:
+'eval_accuracy': 0.66, 'eval_f1_0': 0.43, 'eval_f1_1': 0.05, 'eval_f1_2': 0.79
+
+-
 ViT on building_conditions:
 'eval_accuracy': 0.38, 'eval_f1_0': 0.18 'eval_f1_1': 0.31, 'eval_f1_2': 0.22, 'eval_f1_3': 0.36, 'eval_f1_4': 0.54
+SwinV2 on building_conditions:
+'eval_accuracy': 0.38, 'eval_f1_0': 0.07, 'eval_f1_1': 0.26, 'eval_f1_2': 0.16, 'eval_f1_3': 0.39, 'eval_f1_4': 0.56
+ConvNeXT on building_conditions:
+'eval_accuracy': 0.36, 'eval_f1_0': 0.15, 'eval_f1_1': 0.26, 'eval_f1_2': 0.29, 'eval_f1_3': 0.34, 'eval_f1_4': 0.50
+-
 ViT on landuse:
 'eval_accuracy': 0.82, 'eval_f1_0': 0.90, 'eval_f1_1': 0.4
+SwinV2 on landuse:
+'eval_accuracy': 0.81, 'eval_f1_0': 0.89, 'eval_f1_1': 0.4
+ConvNeXT on landuse:
+'eval_accuracy': 0.82, 'eval_f1_0': 0.89, 'eval_f1_1': 0.40
+
+
 
 In landuse, given the small number of records for most classes, I decided to just train it on residential and commercial classes. Pretty low F1-Score regardless.
 
 Changed dataset column dtypes from category to object (for most columns) because the Categories contained garbage that messed with the map method. 
 It was passing the garbage to the label2id dictionary.
+
+SwinV2 used to run but now is running out of memory. Maybe it only ever ran in the postgrad labs.
+TODO: run these three with SwinV2 and a third model.
