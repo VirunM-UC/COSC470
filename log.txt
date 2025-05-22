@@ -82,11 +82,11 @@ ConvNeXT on landuse:
 'eval_accuracy': 0.82, 'eval_f1_0': 0.89, 'eval_f1_1': 0.40
 
 
-
 In landuse, given the small number of records for most classes, I decided to just train it on residential and commercial classes. Pretty low F1-Score regardless.
 
 Changed dataset column dtypes from category to object (for most columns) because the Categories contained garbage that messed with the map method. 
 It was passing the garbage to the label2id dictionary.
 
-SwinV2 used to run but now is running out of memory. Maybe it only ever ran in the postgrad labs.
-TODO: run these three with SwinV2 and a third model.
+SwinV2 and ConvNeXT only run in postgrad labs.
+
+Figure out pipeline vectorization.
