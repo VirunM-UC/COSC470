@@ -1,6 +1,7 @@
 data/
 images/
-model/
+*model/
+excel_outputs/
 
 *.html
 *.xlsx*

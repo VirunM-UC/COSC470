@@ -77,9 +77,9 @@ hf_train = df_to_hfds_structure_type(df_train, mode = "train")
 hf_validate = df_to_hfds_structure_type(df_validate, mode = "validate")
 
 #preprocessor
-#checkpoint = "google/vit-base-patch16-224-in21k" #ViT (base: 350MB)
+checkpoint = "google/vit-base-patch16-224-in21k" #ViT (base: 350MB)
 #checkpoint = "microsoft/swinv2-base-patch4-window16-256" #Swin Transformer V2 (base: 350MB)
-checkpoint = "facebook/convnext-base-224" #ConvNeXT (base: 350MB)
+#checkpoint = "facebook/convnext-base-224" #ConvNeXT (base: 350MB)
 image_processor = AutoImageProcessor.from_pretrained(checkpoint)
 
 from torchvision.transforms import Resize, Compose, Normalize, ToTensor
@@ -136,7 +136,7 @@ model = AutoModelForImageClassification.from_pretrained(
 
 #hyperparameters
 training_args = TrainingArguments(
-    output_dir="model",
+    output_dir="ViT-structure_type",
     remove_unused_columns=False,
     eval_strategy="epoch",
     save_strategy="epoch",
