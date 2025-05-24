@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay
 
 def load_data(data_folder, file_name):
-    """Takes a pickled dataframe and returns a Tensorflow Dataset
+    """Takes a pickled dataframe and returns a Pandas Dataframe
     """
     df = pd.read_pickle(data_folder + file_name)
     return df
@@ -29,28 +29,34 @@ def df_to_excel(df, file_path):
     # Close the Pandas Excel writer and output the Excel file.
     writer.close()
 
+def main(data_folder, file_path):
+    df = load_data(data_folder, "validation.pkl")
 
-df = load_data("data/", "validation.pkl")
-
-df = df[~df["structure_type"].isna()] #filter NaNs
-
-
-classifier = pipeline("image-classification", model = "ViT-structure_type-model/checkpoint-78")
-
-scores = classifier(df["image"].to_list()) #result is list of list of dicts {score:, label:}. One dict for each label, one list of dicts for each image.
-max_scores = map(lambda per_image: max(per_image, key = lambda per_label: per_label['score']), scores) #result is list of dicts, each dict being th predicted label of an image
-structure_type_predict = list(map(lambda per_image: per_image['label'], max_scores))
+    df = df[~df["structure_type"].isna()] #filter NaNs
 
 
-images = df.loc[:, "image"]
-structure_type_actual = df.loc[:, "structure_type"]
-correct = [structure_type_actual.iloc[i] == structure_type_predict[i] for i in range(len(df))]
+    classifier = pipeline("image-classification", model = "vit-structure_type-model/checkpoint-78")
 
-df_structure_type = pd.DataFrame({"structure_type_predict": structure_type_predict, "structure_type_actual": structure_type_actual, 
-                                  "correct": correct, "image": images})
+    scores = classifier(df["image"].to_list()) #result is list of list of dicts {score:, label:}. One dict for each label, one list of dicts for each image.
+    max_scores = map(lambda per_image: max(per_image, key = lambda per_label: per_label['score']), scores) #result is list of dicts, each dict being th predicted label of an image
+    structure_type_predict = list(map(lambda per_image: per_image['label'], max_scores))
 
-df_to_excel(df_structure_type, "excel_outputs/vit_structure_type.xlsx")
-#df_to_excel(df, "excel_outputs/validate_set.xlsx")
 
-ConfusionMatrixDisplay.from_predictions(structure_type_actual, structure_type_predict, labels = ["attached", "semi-detached", "detached"])
-plt.show()
+    images = df.loc[:, "image"]
+    structure_type_actual = df.loc[:, "structure_type"]
+    correct = [structure_type_actual.iloc[i] == structure_type_predict[i] for i in range(len(df))]
+
+    df_structure_type = pd.DataFrame({"structure_type_predict": structure_type_predict, "structure_type_actual": structure_type_actual, 
+                                    "correct": correct, "image": images})
+
+    df_to_excel(df_structure_type, file_path)
+    #df_to_excel(df, "excel_outputs/validate_set.xlsx")
+
+    ConfusionMatrixDisplay.from_predictions(structure_type_actual, structure_type_predict, labels = ["attached", "semi-detached", "detached"])
+    plt.show()
+
+
+if __name__ == "__main__":
+    data_folder = "data/"
+    file_path = "excel_outputs/vit_structure_type.xlsx"
+    main(data_folder, file_path)

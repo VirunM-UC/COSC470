@@ -134,7 +134,7 @@ model = AutoModelForImageClassification.from_pretrained(
 
 #hyperparameters
 training_args = TrainingArguments(
-    output_dir="model",
+    output_dir="vit-building_conditions-model",
     remove_unused_columns=False,
     eval_strategy="epoch",
     save_strategy="epoch",

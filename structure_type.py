@@ -136,7 +136,7 @@ model = AutoModelForImageClassification.from_pretrained(
 
 #hyperparameters
 training_args = TrainingArguments(
-    output_dir="ViT-structure_type-model",
+    output_dir="vit-structure_type-model",
     remove_unused_columns=False,
     eval_strategy="epoch",
     save_strategy="epoch",
