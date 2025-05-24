@@ -89,4 +89,7 @@ It was passing the garbage to the label2id dictionary.
 
 SwinV2 and ConvNeXT only run in postgrad labs.
 
-Figure out pipeline vectorization.
+Created inference.py to produce a spreadsheet of the predicted and actual structure_type values, along with their images.
+I figured that was the easiest way to analyze the results visually.
+
+Also made it produce a confusion matrix.

@@ -1,5 +1,7 @@
 import pandas as pd
 from transformers import pipeline
+import matplotlib.pyplot as plt
+from sklearn.metrics import ConfusionMatrixDisplay
 
 def load_data(data_folder, file_name):
     """Takes a pickled dataframe and returns a Tensorflow Dataset
@@ -35,12 +37,10 @@ df = df[~df["structure_type"].isna()] #filter NaNs
 
 classifier = pipeline("image-classification", model = "ViT-structure_type-model/checkpoint-78")
 
-structure_type_predict = []
-for i in range(len(df)):
-    image = df.loc[df.index[i], "image"]
-    scores = classifier(image) #result is list of dicts {score:, label:}
-    max_score = max(scores, key = lambda x: x['score'])
-    structure_type_predict.append(max_score['label'])
+scores = classifier(df["image"].to_list()) #result is list of list of dicts {score:, label:}. One dict for each label, one list of dicts for each image.
+max_scores = map(lambda per_image: max(per_image, key = lambda per_label: per_label['score']), scores) #result is list of dicts, each dict being th predicted label of an image
+structure_type_predict = list(map(lambda per_image: per_image['label'], max_scores))
+
 
 images = df.loc[:, "image"]
 structure_type_actual = df.loc[:, "structure_type"]
@@ -50,3 +50,7 @@ df_structure_type = pd.DataFrame({"structure_type_predict": structure_type_predi
                                   "correct": correct, "image": images})
 
 df_to_excel(df_structure_type, "excel_outputs/vit_structure_type.xlsx")
+#df_to_excel(df, "excel_outputs/validate_set.xlsx")
+
+ConfusionMatrixDisplay.from_predictions(structure_type_actual, structure_type_predict, labels = ["attached", "semi-detached", "detached"])
+plt.show()
