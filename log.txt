@@ -60,7 +60,7 @@ These metrics are poor. I'm going to switch to using F1-score.
 
 PyTorch:
 ViT on structure_type:
-'eval_accuracy': 0.73, 'eval_f1_0': 0.41, 'eval_f1_1': 0.06, 'eval_f1_2': 0.84
+'eval_accuracy': 0.71, 'eval_f1_0': 0.47, 'eval_f1_1': 0.0, 'eval_f1_2': 0.84
 SwinV2 on structure_type:
 'eval_accuracy': 0.73, 'eval_f1_0': 0.41, 'eval_f1_1': 0.14, 'eval_f1_2': 0.83
 ConvNeXT on structure_type:
@@ -94,27 +94,29 @@ I figured that was the easiest way to analyze the results visually.
 
 Also made it produce a confusion matrix.
 
-Doing slightly better with stratified sampling?
+Implemented stratified sampling.
 -
+Total - Accuracy: 0.718
 bangkok - Accuracy: 1.000
 britishcolumbia - Accuracy: 0.917
 copenhagen - Accuracy: 1.000
-dhaka - Accuracy: 1.000
-durban - Accuracy: 1.000
-harriscounty - Accuracy: 1.000
-jakarta - Accuracy: 0.833
-kualalumpur - Accuracy: 1.000
-manila - Accuracy: 1.000
-mocoa - Accuracy: 0.889
+dhaka - Accuracy: 0.929
+durban - Accuracy: 0.900
+harriscounty - Accuracy: 0.938
+jakarta - Accuracy: 0.750
+kualalumpur - Accuracy: 0.700
+manila - Accuracy: 0.667
+mocoa - Accuracy: 0.333
 phnompenh - Accuracy: 1.000
 queensland - Accuracy: 1.000
-queretaro - Accuracy: 0.909
-quito - Accuracy: 0.851
-rajshahi - Accuracy: 0.875
-sliven - Accuracy: 1.000
+queretaro - Accuracy: 0.636
+quito - Accuracy: 0.552
+rajshahi - Accuracy: 0.562
+sliven - Accuracy: 0.800
+
+Loss is defined in the model.
 
 TODO:
-Need to figure out where the loss is defined.
-Probably need to learn some pytorch so I can turn building conditions into a regression problem.
+Probably need to learn some pytorch (and huggingface) so I can turn building conditions into a regression problem.
 Need to also analyse building condition outputs and landuse outputs.
 Need to implement more attributes.
