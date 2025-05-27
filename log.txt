@@ -93,3 +93,28 @@ Created inference.py to produce a spreadsheet of the predicted and actual struct
 I figured that was the easiest way to analyze the results visually.
 
 Also made it produce a confusion matrix.
+
+Doing slightly better with stratified sampling?
+-
+bangkok - Accuracy: 1.000
+britishcolumbia - Accuracy: 0.917
+copenhagen - Accuracy: 1.000
+dhaka - Accuracy: 1.000
+durban - Accuracy: 1.000
+harriscounty - Accuracy: 1.000
+jakarta - Accuracy: 0.833
+kualalumpur - Accuracy: 1.000
+manila - Accuracy: 1.000
+mocoa - Accuracy: 0.889
+phnompenh - Accuracy: 1.000
+queensland - Accuracy: 1.000
+queretaro - Accuracy: 0.909
+quito - Accuracy: 0.851
+rajshahi - Accuracy: 0.875
+sliven - Accuracy: 1.000
+
+TODO:
+Need to figure out where the loss is defined.
+Probably need to learn some pytorch so I can turn building conditions into a regression problem.
+Need to also analyse building condition outputs and landuse outputs.
+Need to implement more attributes.

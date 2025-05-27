@@ -42,15 +42,20 @@ def main(data_folder, file_path):
     structure_type_predict = list(map(lambda per_image: per_image['label'], max_scores))
 
 
+    city_name = df.loc[:, "City_Name"]
     images = df.loc[:, "image"]
     structure_type_actual = df.loc[:, "structure_type"]
     correct = [structure_type_actual.iloc[i] == structure_type_predict[i] for i in range(len(df))]
 
-    df_structure_type = pd.DataFrame({"structure_type_predict": structure_type_predict, "structure_type_actual": structure_type_actual, 
-                                    "correct": correct, "image": images})
+    df_structure_type = pd.DataFrame({"City_Name": city_name, "structure_type_predict": structure_type_predict,
+                                      "structure_type_actual": structure_type_actual, "correct": correct, "image": images})
 
     df_to_excel(df_structure_type, file_path)
-    #df_to_excel(df, "excel_outputs/validate_set.xlsx")
+
+    for name in df_structure_type["City_Name"].cat.categories:
+        city_df = df_structure_type.loc[df_structure_type["City_Name"] == name]
+        accuracy = sum(city_df["correct"]) / len(city_df)
+        print(name, f"- Accuracy: {accuracy:.3f}")
 
     ConfusionMatrixDisplay.from_predictions(structure_type_actual, structure_type_predict, labels = ["attached", "semi-detached", "detached"])
     plt.show()
