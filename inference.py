@@ -48,11 +48,18 @@ def main(data_folder, file_path, attribute, checkpoint_num):
 
     city_name = df.loc[:, "City_Name"]
     images = df.loc[:, "image"]
+    point_x = df.loc[:, "POINT_X"]
+    point_y = df.loc[:, "POINT_Y"]
     attribute_actual = df.loc[:, attribute]
     correct = [attribute_actual.iloc[i] == attribute_predict[i] for i in range(len(df))]
 
-    df_attribute = pd.DataFrame({"City_Name": city_name, f"{attribute}_predict": attribute_predict,
-                                      f"{attribute}_actual": attribute_actual, "correct": correct, "image": images})
+    df_attribute = pd.DataFrame({"City_Name"            : city_name, 
+                                 "POINT_X"              : point_x,
+                                 "POINT_Y"              : point_y,
+                                 f"{attribute}_predict" : attribute_predict,
+                                 f"{attribute}_actual"  : attribute_actual, 
+                                  "correct"             : correct, 
+                                  "image"               : images})
 
     df_to_excel(df_attribute, file_path)
 
@@ -68,8 +75,8 @@ def main(data_folder, file_path, attribute, checkpoint_num):
 
 
 if __name__ == "__main__":
-    #attribute, checkpoint_num = "structure_type", 78
-    attribute, checkpoint_num = "building_conditions", 75
+    attribute, checkpoint_num = "structure_type", 78
+    #attribute, checkpoint_num = "building_conditions", 75
     data_folder = "data/"
     file_path = f"excel_outputs/vit_{attribute}.xlsx"
     main(data_folder, file_path, attribute, checkpoint_num)
