@@ -3,23 +3,14 @@ import datasets
 from datasets import Dataset
 from transformers import DefaultDataCollator
 import evaluate
+from transformers import AutoModelForImageClassification, TrainingArguments, Trainer
+
+import utils
 
 import numpy as np
 import pandas as pd
 import random
 import math
-
-#def data_map(feature_dict):
-#   return (feature_dict["image"], feature_dict["building_material"])
-
-#data to hf dataset
-#labels = ["brick", "cinder", "steel", "under construction", "wood"]
-labels = ["attached", "semi-detached", "detached"] 
-label2id, id2label = dict(), dict()
-for i, label in enumerate(labels):
-    label2id[label] = str(i)
-    id2label[str(i)] = label
-
 
 def df_to_hfds_structure_type(df, mode):
     """
@@ -61,27 +52,6 @@ def df_to_hfds_structure_type(df, mode):
     return ds
 
 
-
-def load_data(data_folder, file_name):
-    """Takes a pickled dataframe and returns a Tensorflow Dataset
-    """
-    df = pd.read_pickle(data_folder + file_name)
-    return df
-
-
-df_train = load_data("data/", "training.pkl")
-df_validate = load_data("data/", "validation.pkl")
-
-
-hf_train = df_to_hfds_structure_type(df_train, mode = "train")
-hf_validate = df_to_hfds_structure_type(df_validate, mode = "validate")
-
-#preprocessor
-checkpoint = "google/vit-base-patch16-224-in21k" #ViT (base: 350MB)
-#checkpoint = "microsoft/swinv2-base-patch4-window16-256" #Swin Transformer V2 (base: 350MB)
-#checkpoint = "facebook/convnext-base-224" #ConvNeXT (base: 350MB)
-image_processor = AutoImageProcessor.from_pretrained(checkpoint)
-
 from torchvision.transforms import Resize, Compose, Normalize, ToTensor
 
 def preprocess_maker(processor):
@@ -99,68 +69,90 @@ def preprocess_maker(processor):
     
     return transforms
 
-hf_train.set_transform(preprocess_maker(image_processor))
-hf_validate.set_transform(preprocess_maker(image_processor))
-data_collator = DefaultDataCollator()
 
 #metrics
-accuracy = evaluate.load("accuracy")
-f1 = evaluate.load("f1")
+def metric_maker():
+    accuracy = evaluate.load("accuracy")
+    f1 = evaluate.load("f1")
+    def compute_metrics(eval_pred):
+        predictions, labels = eval_pred
+        predictions = np.argmax(predictions, axis=1)
+        acc_result = accuracy.compute(predictions=predictions, references=labels)
 
-def compute_metrics(eval_pred):
-    predictions, labels = eval_pred
-    predictions = np.argmax(predictions, axis=1)
-    acc_result = accuracy.compute(predictions=predictions, references=labels)
+        f = f1.compute(predictions=predictions, references=labels, average=None)    
+        f_result = dict()
+        for index, value in enumerate(f["f1"]):
+            f_result[f"f1_{index}"] = value
+        
+        result = acc_result | f_result
+        return result
 
-    f = f1.compute(predictions=predictions, references=labels, average=None)    
-    f_result = dict()
-    for index, value in enumerate(f["f1"]):
-        f_result[f"f1_{index}"] = value
-    
-    result = acc_result | f_result
-    return result
-
-
-
-from transformers import AutoModelForImageClassification, TrainingArguments, Trainer
-
-#model
-model = AutoModelForImageClassification.from_pretrained(
-    checkpoint,
-    ignore_mismatched_sizes = True,
-    num_labels=len(labels),
-    id2label=id2label,
-    label2id=label2id,
-)
+    return compute_metrics
 
 
-#hyperparameters
-training_args = TrainingArguments(
-    output_dir="vit-structure_type-model",
-    remove_unused_columns=False,
-    eval_strategy="epoch",
-    save_strategy="epoch",
-    learning_rate=5e-5,
-    per_device_train_batch_size=16,
-    gradient_accumulation_steps=4,
-    per_device_eval_batch_size=16,
-    num_train_epochs=3,
-    warmup_ratio=0.1,
-    logging_steps=10,
-    load_best_model_at_end=True,
-    metric_for_best_model="accuracy",
-    push_to_hub=False,
+def main(model):
+    labels = ["attached", "semi-detached", "detached"] 
+    label2id, id2label = dict(), dict()
+    for i, label in enumerate(labels):
+        label2id[label] = str(i)
+        id2label[str(i)] = label
 
-)
+    #data
+    df_train = utils.load_data("data/", "training.pkl")
+    df_validate = utils.load_data("data/", "validation.pkl")
 
-trainer = Trainer(
-    model=model,
-    args=training_args,
-    data_collator=data_collator,
-    train_dataset=hf_train,
-    eval_dataset=hf_validate,
-    processing_class=image_processor,
-    compute_metrics=compute_metrics,
-)
+    hf_train = df_to_hfds_structure_type(df_train, mode = "train")
+    hf_validate = df_to_hfds_structure_type(df_validate, mode = "validate")
 
-trainer.train()
+    #preprocessor
+    checkpoint = utils.CHECKPOINT[model]
+    image_processor = AutoImageProcessor.from_pretrained(checkpoint)
+
+    hf_train.set_transform(preprocess_maker(image_processor))
+    hf_validate.set_transform(preprocess_maker(image_processor))
+    data_collator = DefaultDataCollator()
+
+    #model
+    model = AutoModelForImageClassification.from_pretrained(
+        checkpoint,
+        ignore_mismatched_sizes = True,
+        num_labels=len(labels),
+        id2label=id2label,
+        label2id=label2id,
+    )
+
+
+    #hyperparameters
+    training_args = TrainingArguments(
+        output_dir= f"{model}-structure_type-model",
+        remove_unused_columns=False,
+        eval_strategy="epoch",
+        save_strategy="epoch",
+        learning_rate=5e-5,
+        per_device_train_batch_size=16,
+        gradient_accumulation_steps=4,
+        per_device_eval_batch_size=16,
+        num_train_epochs=3,
+        warmup_ratio=0.1,
+        logging_steps=10,
+        load_best_model_at_end=True,
+        metric_for_best_model="accuracy",
+        push_to_hub=False,
+
+    )
+
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        data_collator=data_collator,
+        train_dataset=hf_train,
+        eval_dataset=hf_validate,
+        processing_class=image_processor,
+        compute_metrics=metric_maker(),
+    )
+
+    trainer.train()
+
+if __name__ == "__main__":
+    model = "vit"
+    main(model)

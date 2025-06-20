@@ -122,4 +122,6 @@ Need to implement more attributes.
 
 Turned building_conditions into a regression problem.
 Accuracy went down from 38% to 25%.
-Maybe because the classifier head has less parameters. Might need to look into making a bigger classifier head.
+Outputs are bunching up around the average. I don't know how to choose the boundary values for classifying.
+After choosing better ones I got:
+'eval_accuracy': 0.40, macro f1: 0.23 compared to previous acc: 0.38, macro f1: 0.26

@@ -110,10 +110,7 @@ def compute_metrics(eval_pred):
     predictions = np.argmax(predictions, axis=1)
     acc_result = accuracy.compute(predictions=predictions, references=labels)
 
-    f = f1.compute(predictions=predictions, references=labels, average=None)    
-    f_result = dict()
-    for index, value in enumerate(f["f1"]):
-        f_result[f"f1_{index}"] = value
+    f_result = f1.compute(predictions=predictions, references=labels, average="macro")    
     
     result = acc_result | f_result
     return result
