@@ -1,3 +1,5 @@
+import pandas as pd
+
 CHECKPOINT = {
     "vit": "google/vit-base-patch16-224-in21k", #ViT (base: 350MB)
     "swinv2": "microsoft/swinv2-base-patch4-window16-256", #Swin Transformer V2 (base: 350MB)

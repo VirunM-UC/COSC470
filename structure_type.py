@@ -12,6 +12,13 @@ import pandas as pd
 import random
 import math
 
+LABELS = ["attached", "semi-detached", "detached"] 
+LABEL2ID, ID2LABEL = dict(), dict()
+for i, label in enumerate(LABELS):
+    LABEL2ID[label] = str(i)
+    ID2LABEL[str(i)] = label
+
+
 def df_to_hfds_structure_type(df, mode):
     """
     Pandas dataframe to huggingface dataset for classifying structure_type.
@@ -20,7 +27,7 @@ def df_to_hfds_structure_type(df, mode):
     mode: string, either "train" or "validate"
     """
     df = df[~df["structure_type"].isna()] #filter NaNs
-    structure_types = df["structure_type"].map(lambda x: int(label2id[x])).astype("uint8")
+    structure_types = df["structure_type"].map(lambda x: int(LABEL2ID[x])).astype("uint8")
     images = df.loc[:, "image"]
     df_data = pd.DataFrame({"image": images, "structure_type": structure_types})
     
@@ -33,10 +40,10 @@ def df_to_hfds_structure_type(df, mode):
     #Upsampling
     if mode == "train":
         df_classes = []
-        for i in range(len(labels)):
+        for i in range(len(LABELS)):
             df_classes.append(df_data.loc[df_data["structure_type"] == i])
-        max_index = max(range(len(labels)), key = lambda x: len(df_classes[x]))
-        for i in range(len(labels)):
+        max_index = max(range(len(LABELS)), key = lambda x: len(df_classes[x]))
+        for i in range(len(LABELS)):
             if i == max_index:
                 continue
             df_classes[i] = df_classes[i].sample(n = len(df_classes[max_index]), replace=True)
@@ -57,9 +64,9 @@ from torchvision.transforms import Resize, Compose, Normalize, ToTensor
 def preprocess_maker(processor):
     normalize = Normalize(mean=processor.image_mean, std=processor.image_std)
     size = (
-        image_processor.size["shortest_edge"]
-        if "shortest_edge" in image_processor.size
-        else (image_processor.size["height"], image_processor.size["width"])
+        processor.size["shortest_edge"]
+        if "shortest_edge" in processor.size
+        else (processor.size["height"], processor.size["width"])
     )
     _transforms = Compose([Resize(size), ToTensor(), normalize])
     def transforms(examples):
@@ -90,13 +97,7 @@ def metric_maker():
     return compute_metrics
 
 
-def main(model):
-    labels = ["attached", "semi-detached", "detached"] 
-    label2id, id2label = dict(), dict()
-    for i, label in enumerate(labels):
-        label2id[label] = str(i)
-        id2label[str(i)] = label
-
+def main(model_name):
     #data
     df_train = utils.load_data("data/", "training.pkl")
     df_validate = utils.load_data("data/", "validation.pkl")
@@ -105,7 +106,7 @@ def main(model):
     hf_validate = df_to_hfds_structure_type(df_validate, mode = "validate")
 
     #preprocessor
-    checkpoint = utils.CHECKPOINT[model]
+    checkpoint = utils.CHECKPOINT[model_name]
     image_processor = AutoImageProcessor.from_pretrained(checkpoint)
 
     hf_train.set_transform(preprocess_maker(image_processor))
@@ -116,15 +117,15 @@ def main(model):
     model = AutoModelForImageClassification.from_pretrained(
         checkpoint,
         ignore_mismatched_sizes = True,
-        num_labels=len(labels),
-        id2label=id2label,
-        label2id=label2id,
+        num_labels=len(LABELS),
+        id2label=ID2LABEL,
+        label2id=LABEL2ID,
     )
 
 
     #hyperparameters
     training_args = TrainingArguments(
-        output_dir= f"{model}-structure_type-model",
+        output_dir= f"{model_name}-structure_type-model",
         remove_unused_columns=False,
         eval_strategy="epoch",
         save_strategy="epoch",
@@ -154,5 +155,5 @@ def main(model):
     trainer.train()
 
 if __name__ == "__main__":
-    model = "vit"
-    main(model)
+    model_name = "vit"
+    main(model_name)
