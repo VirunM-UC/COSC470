@@ -75,9 +75,9 @@ hf_train = df_to_hfds_building_conditions(df_train, mode = "train")
 hf_validate = df_to_hfds_building_conditions(df_validate, mode = "validate")
 
 #preprocessor
-#checkpoint = "google/vit-base-patch16-224-in21k" #ViT
+checkpoint = "google/vit-base-patch16-224-in21k" #ViT
 #checkpoint = "microsoft/swinv2-base-patch4-window16-256" #Swin Transformer V2
-checkpoint = "facebook/convnext-base-224" #ConvNeXT (base: 350MB)
+#checkpoint = "facebook/convnext-base-224" #ConvNeXT (base: 350MB)
 image_processor = AutoImageProcessor.from_pretrained(checkpoint)
 
 from torchvision.transforms import Resize, Compose, Normalize, ToTensor
@@ -109,10 +109,18 @@ def output_to_int(x):
     """
     Takes model output predictions and turns it into a label ID
     """
-    x = min(4.0 , x)
-    x = max(0.0, x)
-    x = round(x)
-    return x
+    y = 0
+    if x >= 2.5:
+        y = 4
+    elif x < 2.5 and x >= 2.0 :
+        y = 3
+    elif x < 2.0 and x >= 1.5:
+        y = 2
+    elif x < 1.5 and x >= 1.0:
+        y = 1
+    elif x < 1.0 :
+        y= 0
+    return y
 
 def compute_metrics(eval_pred):
     #both predictions and labels need to be turned to ints

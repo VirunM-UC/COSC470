@@ -117,6 +117,9 @@ sliven - Accuracy: 0.800
 Loss is defined in the model.
 
 TODO:
-Probably need to learn some pytorch (and huggingface) so I can turn building conditions into a regression problem.
 Need to also analyse building condition outputs and landuse outputs.
 Need to implement more attributes.
+
+Turned building_conditions into a regression problem.
+Accuracy went down from 38% to 25%.
+Maybe because the classifier head has less parameters. Might need to look into making a bigger classifier head.
