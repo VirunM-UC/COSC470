@@ -26,7 +26,7 @@ def df_to_hfds_building_conditions(df, mode):
     mode: string, either "train" or "validate"
     """
     df = df[~df["building_conditions"].isna()] #filter NaNs
-    building_conditions = df["building_conditions"].map(lambda x: int(label2id[x])).astype("uint8")
+    building_conditions = df["building_conditions"].map(lambda x: int(label2id[x])).astype("float32")
     images = df.loc[:, "image"]
     df_data = pd.DataFrame({"image": images, "building_conditions": building_conditions})
     
@@ -54,7 +54,7 @@ def df_to_hfds_building_conditions(df, mode):
                              "label": df_data["building_conditions"]}, 
                              
                              features = datasets.Features({"image": datasets.Image(),
-                                                           "label": datasets.Value(dtype="uint8")}))
+                                                           "label": datasets.Value(dtype="float32")}))
     return ds
 
 
@@ -75,9 +75,9 @@ hf_train = df_to_hfds_building_conditions(df_train, mode = "train")
 hf_validate = df_to_hfds_building_conditions(df_validate, mode = "validate")
 
 #preprocessor
-#checkpoint = "google/vit-base-patch16-224-in21k" #ViT
+checkpoint = "google/vit-base-patch16-224-in21k" #ViT
 #checkpoint = "microsoft/swinv2-base-patch4-window16-256" #Swin Transformer V2
-checkpoint = "facebook/convnext-base-224" #ConvNeXT (base: 350MB)
+#checkpoint = "facebook/convnext-base-224" #ConvNeXT (base: 350MB)
 image_processor = AutoImageProcessor.from_pretrained(checkpoint)
 
 from torchvision.transforms import Resize, Compose, Normalize, ToTensor
@@ -105,9 +105,28 @@ data_collator = DefaultDataCollator()
 accuracy = evaluate.load("accuracy")
 f1 = evaluate.load("f1")
 
+def output_to_int(x):
+    """
+    Takes model output predictions and turns it into a label ID
+    """
+    y = 0
+    if x >= 2.5:
+        y = 4
+    elif x < 2.5 and x >= 2.0 :
+        y = 3
+    elif x < 2.0 and x >= 1.5:
+        y = 2
+    elif x < 1.5 and x >= 1.0:
+        y = 1
+    elif x < 1.0 :
+        y= 0
+    return y
+
 def compute_metrics(eval_pred):
+    #both predictions and labels need to be turned to ints
     predictions, labels = eval_pred
-    predictions = np.argmax(predictions, axis=1)
+    labels = labels.astype(np.uint8)
+    predictions = np.array([output_to_int(x.item()) for x in predictions])
     acc_result = accuracy.compute(predictions=predictions, references=labels)
 
     f = f1.compute(predictions=predictions, references=labels, average=None)    
@@ -126,9 +145,7 @@ from transformers import AutoModelForImageClassification, TrainingArguments, Tra
 model = AutoModelForImageClassification.from_pretrained(
     checkpoint,
     ignore_mismatched_sizes = True,
-    num_labels=len(labels),
-    id2label=id2label,
-    label2id=label2id,
+    num_labels=1,
 )
 
 
