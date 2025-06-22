@@ -116,12 +116,13 @@ sliven - Accuracy: 0.800
 
 Loss is defined in the model.
 
-TODO:
-Need to also analyse building condition outputs and landuse outputs.
-Need to implement more attributes.
-
 Turned building_conditions into a regression problem.
 Accuracy went down from 38% to 25%.
 Outputs are bunching up around the average. I don't know how to choose the boundary values for classifying.
 After choosing better ones I got:
 'eval_accuracy': 0.40, macro f1: 0.23 compared to previous acc: 0.38, macro f1: 0.26
+
+TODO:
+Need to also analyse building condition outputs and landuse outputs.
+Need to implement more attributes.
+Need to fix inference and print_validate so it uses utils.

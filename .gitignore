@@ -1,5 +1,7 @@
+__pycache__/
+
 data/
-images/
+*images/
 *model/
 excel_outputs/
 
