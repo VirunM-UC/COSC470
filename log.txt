@@ -10,6 +10,7 @@ Chose to store images and data together for easy loading. Used Pandas Dataframe 
 Switched from pure TensorFlow to Huggingface because ViT is not a default model in TF so loading it would have required me to learn more anyway, so I'd rather learn something higher level.
 
 For missing images, save white squares and save missing image mask as csv file. In create_datasets.py, remove missing records and save.
+MISSING = [107, 113, 363, 471, 480, 499, 588, 593, 597, 969, 1411, 1422, 1423, 1426, 1434, 1435, 1438, 1440, 1442, 1444, 1464, 1472, 1475, 1476]
 
 ViT is classifying everything as detached (Most common class). Dataset is very imbalanced. Implemented upsampling to fix this. Class Weights did nothing.
 Couldn't find upsampling method in Huggingface. Using Pandas Upsampling method. Fixed this. Accuracy at 50% (image memory inefficiency meant I used less data)
@@ -122,7 +123,14 @@ Outputs are bunching up around the average. I don't know how to choose the bound
 After choosing better ones I got:
 'eval_accuracy': 0.40, macro f1: 0.23 compared to previous acc: 0.38, macro f1: 0.26
 
+A big issue for structure_type is the building not being in frame.
+Potential solution to this is making a composite image with different headings so that you can catch more of the building.
+
+Some buildings have indoor images (useless). Change GSV parameters to only get outdoor ones.
+
+
 TODO:
+Collect composite images.
 Need to also analyse building condition outputs and landuse outputs.
 Need to implement more attributes.
 Need to fix inference and print_validate so it uses utils.

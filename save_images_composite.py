@@ -7,9 +7,28 @@ import json
 KEY = "AIzaSyDE50N-WPn4s06OKhccYdDPXVnJ_k6O0bM"
 
 
+def make_url(metadata = False, **kwargs):
+    """
+    Creates a url request for Google Maps Static Street View API
+    For example, https://maps.googleapis.com/maps/api/streetview/metadata?location={point_y},{point_x}&source=outdoor&key={KEY}
+
+    Paramaters:
+    metadata: Boolean for whether to return the image request or the metadata request.
+    **kwargs: All the parameters to pass to the API with their values in string form.
+    """
+    base = "https://maps.googleapis.com/maps/api/streetview"
+    if metadata == True:
+        base += "/metadata"
+    kwarg_strings = []
+    for kwarg in kwargs:
+        kwarg_str = kwarg + "=" +  kwargs[kwarg]
+        kwarg_strings.append(kwarg_str)
+    url = base + "?" + "&".join(kwarg_strings)
+    return url
+
 def get_image(point_x, point_y):
     #get panorama metadata
-    metadata_url = f"https://maps.googleapis.com/maps/api/streetview/metadata?size=400x100&fov=120&return_error_code=true&location={point_y},{point_x}&key={KEY}"
+    metadata_url = make_url(metadata = True, location = f"{point_y},{point_x}", source = "outdoor", key = KEY)
     resp = urlopen(metadata_url)
     metadata_json = json.loads(resp.read())
 
@@ -24,7 +43,13 @@ def get_image(point_x, point_y):
     heading_diffs = [-90, 0, 90]
     images = []
     for diff in heading_diffs:
-        url = f"https://maps.googleapis.com/maps/api/streetview?size=400x100&fov=120&return_error_code=true&location={point_y},{point_x}&heading={heading + diff}&key={KEY}"
+        url = make_url(location = f"{point_y},{point_x}", 
+                       size = "400x100",
+                       fov = str(120), 
+                       return_error_code = "true",
+                       source = "outdoor",
+                       heading = str(heading + diff),
+                       key = KEY)
         resp = urlopen(url)
         image = np.asarray(bytearray(resp.read()), dtype='uint8')
         image = cv2.imdecode(image, cv2.IMREAD_COLOR)
@@ -40,12 +65,12 @@ def main(image_folder, excel_fname, image_mask_fname ):
     point_x = "-78.49973065"
     point_y = "-0.080093856"
     image = get_image(point_x, point_y)
-    save_image(image, image_folder, "comp")
+    save_image(image, image_folder, "comp2")
 
         
 
 if __name__ == '__main__':
-    image_folder = 'composite-images/'
+    image_folder = 'test-images/'
     excel_fname = "UrbFloodVul_Overall_StudyArea_Points.xlsx"
     image_mask_fname = "lost_images_mask.csv"
     main(image_folder, excel_fname, image_mask_fname )

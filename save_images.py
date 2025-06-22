@@ -7,7 +7,7 @@ KEY = "AIzaSyDE50N-WPn4s06OKhccYdDPXVnJ_k6O0bM"
 #MISSING = [107, 113, 363, 471, 480, 499, 588, 593, 597, 969, 1411, 1422, 1423, 1426, 1434, 1435, 1438, 1440, 1442, 1444, 1464, 1472, 1475, 1476]
 
 def get_image(point_x, point_y):
-    url = f"https://maps.googleapis.com/maps/api/streetview?size=400x400&fov=120&return_error_code=true&location={point_y},{point_x}&key={KEY}"
+    url = f"https://maps.googleapis.com/maps/api/streetview?size=400x400&fov=120&return_error_code=true&source=outdoor&location={point_y},{point_x}&key={KEY}"
     resp = urlopen(url)
     image = np.asarray(bytearray(resp.read()), dtype='uint8')
     image = cv2.imdecode(image, cv2.IMREAD_COLOR)
@@ -30,7 +30,8 @@ def main(image_folder, excel_fname, image_mask_fname ):
 
             missing.append(i)
             data_mask.iloc[i] = False
-    print("Missing:", missing)
+    print(f"Missing: {len(missing)} out of {len(df)} ({len(missing)/len(df):.0%})")
+    print(missing)
     data_mask.to_csv(image_mask_fname, index = False)
         
         
