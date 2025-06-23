@@ -26,7 +26,7 @@ def make_url(metadata = False, **kwargs):
     url = base + "?" + "&".join(kwarg_strings)
     return url
 
-def get_image(point_x, point_y):
+def get_comp_image(point_x, point_y):
     #get panorama metadata
     metadata_url = make_url(metadata = True, location = f"{point_y},{point_x}", source = "outdoor", key = KEY)
     resp = urlopen(metadata_url)
@@ -40,7 +40,7 @@ def get_image(point_x, point_y):
     heading = np.arctan2(lng_diff, lat_diff) * 180/np.pi
 
 
-    heading_diffs = [-90, 0, 90]
+    heading_diffs = [-45, 0, 45]
     images = []
     for diff in heading_diffs:
         url = make_url(location = f"{point_y},{point_x}", 
@@ -62,15 +62,33 @@ def save_image(image, image_folder, index):
     cv2.imwrite((image_folder + f"image_{index}.jpg"), image)
 
 def main(image_folder, excel_fname, image_mask_fname ):
+    """
     point_x = "-78.49973065"
     point_y = "-0.080093856"
-    image = get_image(point_x, point_y)
-    save_image(image, image_folder, "comp2")
+    image = get_comp_image(point_x, point_y)
+    save_image(image, image_folder, "45")
 
-        
+    """    
+    missing = []
+    df = pd.read_excel(excel_fname)
+    data_mask = pd.Series([True for _ in range(len(df))], dtype="boolean")
+    for i in range(len(df)):
+        try:
+            image = get_comp_image(df.loc[i, "POINT_X"], df.loc[i, "POINT_Y"])
+            save_image(image, image_folder, i)
+        except:
+            image = np.zeros((400,400,3))
+            save_image(image, image_folder, i)
+
+            missing.append(i)
+            data_mask.iloc[i] = False
+    print(f"Missing: {len(missing)} out of {len(df)} ({len(missing)/len(df):.0%})")
+    print(missing)
+    data_mask.to_csv(image_mask_fname, index = False)
+   
 
 if __name__ == '__main__':
-    image_folder = 'test-images/'
+    image_folder = 'image-folders/composite-images/'
     excel_fname = "UrbFloodVul_Overall_StudyArea_Points.xlsx"
-    image_mask_fname = "lost_images_mask.csv"
+    image_mask_fname = "lost_images_mask_composite.csv"
     main(image_folder, excel_fname, image_mask_fname )

@@ -35,5 +35,5 @@ def main(data_folder, file_path):
 
 if __name__ == "__main__":
     data_folder = "data/"
-    file_path = "excel_outputs/validate_set.xlsx"
+    file_path = "excel-outputs/validate_set.xlsx"
     main(data_folder, file_path)

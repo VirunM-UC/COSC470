@@ -128,9 +128,15 @@ Potential solution to this is making a composite image with different headings s
 
 Some buildings have indoor images (useless). Change GSV parameters to only get outdoor ones.
 
+Collected composite images.
+MISSING = [60, 79, 107, 113, 363, 480, 499, 588, 593, 597, 924, 961, 969, 1411, 1422, 1423, 1426, 1434, 1435, 1438, 1440, 1442, 1444, 1464, 1469, 1472, 1475, 1476]
+
+ViT on structure_type with composite images:
+'eval_accuracy': 0.75, 'eval_f1_0': 0.54, 'eval_f1_1': 0.0, 'eval_f1_2': 0.85
+compare with regular images:
+'eval_accuracy': 0.71, 'eval_f1_0': 0.47, 'eval_f1_1': 0.0, 'eval_f1_2': 0.84
 
 TODO:
-Collect composite images.
 Need to also analyse building condition outputs and landuse outputs.
 Need to implement more attributes.
 Need to fix inference and print_validate so it uses utils.

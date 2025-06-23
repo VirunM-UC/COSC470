@@ -97,10 +97,10 @@ def metric_maker():
     return compute_metrics
 
 
-def main(model_name):
+def main(model_name, data_folder):
     #data
-    df_train = utils.load_data("data/", "training.pkl")
-    df_validate = utils.load_data("data/", "validation.pkl")
+    df_train = utils.load_data(data_folder, "training.pkl")
+    df_validate = utils.load_data(data_folder, "validation.pkl")
 
     hf_train = df_to_hfds_structure_type(df_train, mode = "train")
     hf_validate = df_to_hfds_structure_type(df_validate, mode = "validate")
@@ -125,7 +125,7 @@ def main(model_name):
 
     #hyperparameters
     training_args = TrainingArguments(
-        output_dir= f"{model_name}-structure_type-model",
+        output_dir= f"{model_name}-structure_type-comp_model",
         remove_unused_columns=False,
         eval_strategy="epoch",
         save_strategy="epoch",
@@ -156,4 +156,5 @@ def main(model_name):
 
 if __name__ == "__main__":
     model_name = "vit"
-    main(model_name)
+    data_folder = "data-folders/composite-data/"
+    main(model_name, data_folder)

@@ -1,4 +1,5 @@
 import pandas as pd
+from io import BytesIO
 from transformers import pipeline
 import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay
@@ -14,6 +15,7 @@ def load_data(data_folder, file_name):
 
 
 def df_to_excel(df, file_path):
+    images = df.loc[:, "image"]
     df = df.iloc[:, :-1]
 
     # Create a Pandas Excel writer using XlsxWriter as the engine.
@@ -27,18 +29,21 @@ def df_to_excel(df, file_path):
 
     # Insert an image.
     for i in range(len(df)):
-        worksheet.insert_image(f'P{i+2}', f'images/image_{df.index[i]}.jpg')
+        image = images.iloc[i]
+        image_buffer = BytesIO()
+        image.save(image_buffer, format='JPEG')
+        worksheet.insert_image(f'P{i+2}', "", {'image_data': image_buffer})
 
     # Close the Pandas Excel writer and output the Excel file.
     writer.close()
 
-def main(data_folder, file_path, attribute, checkpoint_num):
+def main(data_folder, file_path, attribute, model_path):
     df = load_data(data_folder, "validation.pkl")
 
     df = df[~df[attribute].isna()] #filter NaNs
 
 
-    classifier = pipeline("image-classification", model = f"vit-{attribute}-model/checkpoint-{checkpoint_num}")
+    classifier = pipeline("image-classification", model = model_path)
 
     #This section would be functionalised with building_conditions as regression.
     scores = classifier(df["image"].to_list()) #result is list of list of dicts {score:, label:}. One dict for each label, one list of dicts for each image.
@@ -75,8 +80,9 @@ def main(data_folder, file_path, attribute, checkpoint_num):
 
 
 if __name__ == "__main__":
-    attribute, checkpoint_num = "structure_type", 78
-    #attribute, checkpoint_num = "building_conditions", 75
-    data_folder = "data/"
-    file_path = f"excel_outputs/vit_{attribute}.xlsx"
-    main(data_folder, file_path, attribute, checkpoint_num)
+    attribute= "structure_type"
+    #attribute = "building_conditions"
+    data_folder = "data-folders/composite-data/"
+    model_path = "vit-structure_type-comp_model/checkpoint-81"
+    file_path = f"excel-outputs/vit_{attribute}.xlsx"
+    main(data_folder, file_path, attribute, model_path)

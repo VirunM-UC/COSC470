@@ -40,8 +40,8 @@ def main(image_folder, data_folder, excel_fname, image_mask_fname):
         
 
 if __name__ == '__main__':
-    image_folder = 'images/'
-    data_folder = "data/"
+    image_folder = 'image-folders/composite-images/'
+    data_folder = "data-folders/composite-data/"
+    image_mask_fname = "lost_images_mask_composite.csv"
     excel_fname = "UrbFloodVul_Overall_StudyArea_Points.xlsx"
-    image_mask_fname = "lost_images_mask.csv"
     main(image_folder, data_folder, excel_fname, image_mask_fname)
