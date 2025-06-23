@@ -132,9 +132,18 @@ Collected composite images.
 MISSING = [60, 79, 107, 113, 363, 480, 499, 588, 593, 597, 924, 961, 969, 1411, 1422, 1423, 1426, 1434, 1435, 1438, 1440, 1442, 1444, 1464, 1469, 1472, 1475, 1476]
 
 ViT on structure_type with composite images:
-'eval_accuracy': 0.75, 'eval_f1_0': 0.54, 'eval_f1_1': 0.0, 'eval_f1_2': 0.85
+'eval_accuracy': 0.75, 'eval_f1_0': 0.54, 'eval_f1_1': 0.0
 compare with regular images:
-'eval_accuracy': 0.71, 'eval_f1_0': 0.47, 'eval_f1_1': 0.0, 'eval_f1_2': 0.84
+'eval_accuracy': 0.71, 'eval_f1_0': 0.47, 'eval_f1_1': 0.0
+
+pickled dataframes don't store the compressed image files themselves.
+They store links to the images.
+If you move the image folder, they will fail.
+
+ViT on building_conditions with composite images (not ordinal):
+'eval_accuracy': 0.39, 'eval_f1_0': 0.14, 'eval_f1_1': 0.2, 'eval_f1_2': 0.32, 'eval_f1_3': 0.38, 'eval_f1_4': 0.54
+compare with regular images:
+'eval_accuracy': 0.38, 'eval_f1_0': 0.18 'eval_f1_1': 0.31, 'eval_f1_2': 0.22, 'eval_f1_3': 0.36, 'eval_f1_4': 0.54
 
 TODO:
 Need to also analyse building condition outputs and landuse outputs.
