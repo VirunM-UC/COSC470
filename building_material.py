@@ -12,36 +12,37 @@ import pandas as pd
 import random
 import math
 
-LABELS = ["attached", "semi-detached", "detached"] 
+LABELS = ["cinder", "brick"] 
 LABEL2ID, ID2LABEL = dict(), dict()
 for i, label in enumerate(LABELS):
     LABEL2ID[label] = str(i)
     ID2LABEL[str(i)] = label
 
 
-def df_to_hfds_structure_type(df, mode):
+def df_to_hfds_building_material(df, mode):
     """
-    Pandas dataframe to huggingface dataset for classifying structure_type.
+    Pandas dataframe to huggingface dataset for classifying building material.
     Args:
     df: dataframe
     mode: string, either "train" or "validate"
     """
-    df = df[~df["structure_type"].isna()] #filter NaNs
-    structure_types = df["structure_type"].map(lambda x: int(LABEL2ID[x])).astype("uint8")
+
+    df = df[df["building_material"].map(lambda x: (x in LABELS))] #filter everything that is not in LABELS
+    building_materials = df["building_material"].map(lambda x: int(LABEL2ID[x])).astype("uint8")
     images = df.loc[:, "image"]
-    df_data = pd.DataFrame({"image": images, "structure_type": structure_types})
+    df_data = pd.DataFrame({"image": images, "building_material": building_materials})
     
     if mode == "train":
         print("train size (original): ", len(df_data))
     elif mode == "validate":
         print("validate size: ", len(df_data))
-    print(df_data["structure_type"].value_counts())
+    print(df_data["building_material"].value_counts())
 
     #Upsampling
     if mode == "train":
         df_classes = []
         for i in range(len(LABELS)):
-            df_classes.append(df_data.loc[df_data["structure_type"] == i])
+            df_classes.append(df_data.loc[df_data["building_material"] == i])
         max_index = max(range(len(LABELS)), key = lambda x: len(df_classes[x]))
         for i in range(len(LABELS)):
             if i == max_index:
@@ -49,14 +50,15 @@ def df_to_hfds_structure_type(df, mode):
             df_classes[i] = df_classes[i].sample(n = len(df_classes[max_index]), replace=True)
         df_data = pd.concat(df_classes)
         print("train_size (upsampled): ", len(df_data))
-        print(df_data["structure_type"].value_counts())
+        print(df_data["building_material"].value_counts())
 
     ds = Dataset.from_dict({"image": df_data["image"],
-                             "label": df_data["structure_type"]}, 
+                             "label": df_data["building_material"]}, 
                              
                              features = datasets.Features({"image": datasets.Image(),
                                                            "label": datasets.Value(dtype="uint8")}))
     return ds
+
 
 
 from torchvision.transforms import Resize, Compose, Normalize, ToTensor
@@ -102,8 +104,8 @@ def main(model_name, data_folder):
     df_train = utils.load_data(data_folder, "training.pkl")
     df_validate = utils.load_data(data_folder, "validation.pkl")
 
-    hf_train = df_to_hfds_structure_type(df_train, mode = "train")
-    hf_validate = df_to_hfds_structure_type(df_validate, mode = "validate")
+    hf_train = df_to_hfds_building_material(df_train, mode = "train")
+    hf_validate = df_to_hfds_building_material(df_validate, mode = "validate")
 
     #preprocessor
     checkpoint = utils.CHECKPOINT[model_name]
@@ -125,7 +127,7 @@ def main(model_name, data_folder):
 
     #hyperparameters
     training_args = TrainingArguments(
-        output_dir= f"{model_name}-structure_type-model",
+        output_dir= f"{model_name}-building_material-comp_model",
         remove_unused_columns=False,
         eval_strategy="epoch",
         save_strategy="epoch",
@@ -155,6 +157,6 @@ def main(model_name, data_folder):
     trainer.train()
 
 if __name__ == "__main__":
-    model_name = "swinv2"
+    model_name = "vit"
     data_folder = "data-folders/composite-data/"
     main(model_name, data_folder)

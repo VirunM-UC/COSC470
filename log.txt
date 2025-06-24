@@ -145,7 +145,19 @@ ViT on building_conditions with composite images (not ordinal):
 compare with regular images:
 'eval_accuracy': 0.38, 'eval_f1_0': 0.18 'eval_f1_1': 0.31, 'eval_f1_2': 0.22, 'eval_f1_3': 0.36, 'eval_f1_4': 0.54
 
+Implemented building_material (only cinder annd brick)
+'eval_accuracy': 0.875, 'eval_f1_1': 0.51
+Interesting that it's so poor. Arguably this should be the easiest attribute.
+On composite images it's better:
+'eval_accuracy': 0.90, 'eval_f1_1': 0.62
+
 TODO:
 Need to also analyse building condition outputs and landuse outputs.
 Need to implement more attributes.
 Need to fix inference and print_validate so it uses utils.
+-
+Remaining files to clean (They don't work right now):
+building_conditions_ordinal.py
+landuse.py
+inference.py (with utils)
+print_validate.py
