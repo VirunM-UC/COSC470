@@ -55,6 +55,6 @@ if __name__ == "__main__":
     attribute = "structure_type"
     #attribute = "building_conditions"
     data_folder = "data-folders/data/"
-    model_path = "vit-structure_type-model/checkpoint-78"
+    model_path = "model-folders/vit-structure_type-model/checkpoint-78"
     file_path = f"excel-outputs/vit_{attribute}.xlsx"
     main(data_folder, file_path, attribute, model_path)

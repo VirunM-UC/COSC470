@@ -96,7 +96,7 @@ def metric_maker():
     return compute_metrics
 
 
-def main(model_name, data_folder):
+def main(model_name, data_folder, model_output_dir):
     #data
     df_train = utils.load_data(data_folder, "training.pkl")
     df_validate = utils.load_data(data_folder, "validation.pkl")
@@ -124,7 +124,7 @@ def main(model_name, data_folder):
 
     #hyperparameters
     training_args = TrainingArguments(
-        output_dir= f"{model_name}-building_conditions-comp_model",
+        output_dir= model_output_dir,
         remove_unused_columns=False,
         eval_strategy="epoch",
         save_strategy="epoch",
@@ -155,5 +155,6 @@ def main(model_name, data_folder):
 
 if __name__ == "__main__":
     model_name = "vit"
-    data_folder = "data-folders/composite-data/"
-    main(model_name, data_folder)
+    data_folder = "data-folders/data/"
+    model_output_dir = f"model-folders/{model_name}-building_conditions-model"
+    main(model_name, data_folder, model_output_dir)

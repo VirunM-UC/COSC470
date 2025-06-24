@@ -2,7 +2,7 @@ __pycache__/
 
 data-folders/
 image-folders/
-*model/
+model-folders/
 excel-outputs/
 
 *.html

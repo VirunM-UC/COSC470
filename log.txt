@@ -157,4 +157,3 @@ Slight Acc drop with ordinal building conditions on composite images. The output
 TODO:
 Need to also analyse building condition outputs and landuse outputs.
 Need to implement more attributes.
-Need to fix inference and print_validate so it uses utils.
