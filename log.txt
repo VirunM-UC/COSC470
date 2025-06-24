@@ -151,13 +151,10 @@ Interesting that it's so poor. Arguably this should be the easiest attribute.
 On composite images it's better:
 'eval_accuracy': 0.90, 'eval_f1_1': 0.62
 
+Slight Acc drop with ordinal building conditions on composite images. The output spread may have changed with the composite images.
+
+
 TODO:
 Need to also analyse building condition outputs and landuse outputs.
 Need to implement more attributes.
 Need to fix inference and print_validate so it uses utils.
--
-Remaining files to clean (They don't work right now):
-building_conditions_ordinal.py
-landuse.py
-inference.py (with utils)
-print_validate.py

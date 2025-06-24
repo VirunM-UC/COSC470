@@ -1,44 +1,16 @@
 import pandas as pd
-from io import BytesIO
 from transformers import pipeline
 import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay
 
+import utils
+
 LABELS = {"structure_type": ("attached", "semi-detached", "detached"),
           "building_conditions": ("very poor", "poor", "fair", "good", "very good")}
 
-def load_data(data_folder, file_name):
-    """Takes a pickled dataframe and returns a Pandas Dataframe
-    """
-    df = pd.read_pickle(data_folder + file_name)
-    return df
-
-
-def df_to_excel(df, file_path):
-    images = df.loc[:, "image"]
-    df = df.iloc[:, :-1]
-
-    # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter(file_path, engine='xlsxwriter')
-
-    # Convert the dataframe to an XlsxWriter Excel object.
-    df.to_excel(writer, sheet_name='Sheet1')
-
-    # Get the xlsxwriter workbook and worksheet objects.
-    worksheet = writer.sheets['Sheet1']
-
-    # Insert an image.
-    for i in range(len(df)):
-        image = images.iloc[i]
-        image_buffer = BytesIO()
-        image.save(image_buffer, format='JPEG')
-        worksheet.insert_image(f'P{i+2}', "", {'image_data': image_buffer})
-
-    # Close the Pandas Excel writer and output the Excel file.
-    writer.close()
 
 def main(data_folder, file_path, attribute, model_path):
-    df = load_data(data_folder, "validation.pkl")
+    df = utils.load_data(data_folder, "validation.pkl")
 
     df = df[~df[attribute].isna()] #filter NaNs
 
@@ -66,7 +38,7 @@ def main(data_folder, file_path, attribute, model_path):
                                   "correct"             : correct, 
                                   "image"               : images})
 
-    df_to_excel(df_attribute, file_path)
+    utils.df_to_excel(df_attribute, file_path)
 
     accuracy = sum(df_attribute["correct"]) / len(df_attribute)
     print(f"{attribute} - Accuracy: {accuracy:.3f}")
@@ -80,9 +52,9 @@ def main(data_folder, file_path, attribute, model_path):
 
 
 if __name__ == "__main__":
-    attribute= "structure_type"
+    attribute = "structure_type"
     #attribute = "building_conditions"
-    data_folder = "data-folders/composite-data/"
-    model_path = "vit-structure_type-comp_model/checkpoint-81"
+    data_folder = "data-folders/data/"
+    model_path = "vit-structure_type-model/checkpoint-78"
     file_path = f"excel-outputs/vit_{attribute}.xlsx"
     main(data_folder, file_path, attribute, model_path)
