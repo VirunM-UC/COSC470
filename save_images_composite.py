@@ -4,13 +4,14 @@ import numpy as np
 import pandas as pd
 import json
 
-KEY = "AIzaSyDE50N-WPn4s06OKhccYdDPXVnJ_k6O0bM"
+from utils import KEY
 
 
 def make_url(metadata = False, **kwargs):
     """
     Creates a url request for Google Maps Static Street View API
     For example, https://maps.googleapis.com/maps/api/streetview/metadata?location={point_y},{point_x}&source=outdoor&key={KEY}
+    or https://maps.googleapis.com/maps/api/streetview?size=400x400&fov=120&return_error_code=true&source=outdoor&location={point_y},{point_x}&key={KEY}
 
     Paramaters:
     metadata: Boolean for whether to return the image request or the metadata request.

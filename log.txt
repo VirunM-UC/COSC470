@@ -154,6 +154,12 @@ On composite images it's better:
 Slight Acc drop with ordinal building conditions on composite images. The output spread may have changed with the composite images.
 
 
+Double data:
+Map tiles API.
+-call on location, get PanoIDs.
+-call on each PanoID to get its coordinates and calculate distance from location. Then select closest PanoID and calculate heading.
+Streetview API. Collect images. Only outdoor ones. (If using indoor panoID and source = outdoor, does it return an error?)
+
 TODO:
 Need to also analyse building condition outputs and landuse outputs.
 Need to implement more attributes.

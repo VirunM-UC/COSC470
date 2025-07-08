@@ -5,6 +5,10 @@ from transformers import DefaultDataCollator
 import evaluate
 from transformers import AutoModelForImageClassification, TrainingArguments, Trainer
 
+import torch
+import torch.nn as nn
+from transformers import ViTModel
+
 import utils
 
 import numpy as np
@@ -111,6 +115,31 @@ def metric_maker():
 
     return compute_metrics
 
+class MyViT(nn.Module):
+    def __init__(self, checkpoint):
+        super(MyViT, self).__init__()
+        self.vit = ViTModel.from_pretrained(checkpoint)
+
+        self.feed_forward = nn.Sequential(
+            nn.GELU(),
+            nn.Dropout(0.1),
+            nn.Linear(self.vit.config.hidden_size, self.vit.config.hidden_size),
+            nn.GELU(),
+            nn.Linear(self.vit.config.hidden_size, 1)
+        )
+
+        self.loss = nn.MSELoss()
+
+    def forward(self, pixel_values = None, labels = None):
+        last_hidden_state, pooler_output = self.vit(pixel_values, return_dict = False)
+        output = self.feed_forward(pooler_output)
+        
+        if labels == None:
+            return (outputs,)
+        else:
+            loss = self.loss(torch.squeeze(output), labels)
+            return (loss, output)
+
 
 def main(model_name, data_folder, model_output_dir):
     #data
@@ -129,12 +158,14 @@ def main(model_name, data_folder, model_output_dir):
     data_collator = DefaultDataCollator()
 
     #model
+    """
     model = AutoModelForImageClassification.from_pretrained(
         checkpoint,
         ignore_mismatched_sizes = True,
         num_labels=1,
     )
-
+    """
+    model = MyViT(checkpoint)
 
     #hyperparameters
     training_args = TrainingArguments(

@@ -3,8 +3,7 @@ import cv2
 import numpy as np
 import pandas as pd
 
-KEY = "AIzaSyDE50N-WPn4s06OKhccYdDPXVnJ_k6O0bM"
-#MISSING = [107, 113, 363, 471, 480, 499, 588, 593, 597, 969, 1411, 1422, 1423, 1426, 1434, 1435, 1438, 1440, 1442, 1444, 1464, 1472, 1475, 1476]
+from utils import KEY
 
 def get_image(point_x, point_y):
     url = f"https://maps.googleapis.com/maps/api/streetview?size=400x400&fov=120&return_error_code=true&source=outdoor&location={point_y},{point_x}&key={KEY}"
