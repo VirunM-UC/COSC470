@@ -159,7 +159,19 @@ Map tiles API.
 -call on location, get PanoIDs.
 -call on each PanoID to get its coordinates and calculate distance from location. Then select closest PanoID and calculate heading.
 Streetview API. Collect images. Only outdoor ones. (If using indoor panoID and source = outdoor, does it return an error?)
+-
+Got them.
+Missing: 46 out of 1484 (3%)
+[60, 79, 102, 107, 110, 113, 144, 149, 181, 191, 317, 363, 480, 499, 588, 593, 597, 612, 633, 634, 635, 742, 743, 784, 859, 924, 961, 969, 1015, 1043, 1124, 1411, 1422, 1423, 1434, 1435, 1438, 1440, 1442, 1444, 1461, 1464, 1469, 1472, 1475, 1476]
+
+ViT on structure_type with images from multi panoramas:
+'eval_accuracy': 0.77, 'eval_f1_0': 0.48, 'eval_f1_1': 0.10
+ViT on structure_type with composite images:
+'eval_accuracy': 0.75, 'eval_f1_0': 0.54, 'eval_f1_1': 0.0
+compare with regular images:
+'eval_accuracy': 0.71, 'eval_f1_0': 0.47, 'eval_f1_1': 0.0
 
 TODO:
+Document make_url better.
 Need to also analyse building condition outputs and landuse outputs.
 Need to implement more attributes.

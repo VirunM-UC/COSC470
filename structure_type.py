@@ -156,6 +156,6 @@ def main(model_name, data_folder, model_output_dir):
 
 if __name__ == "__main__":
     model_name = "vit"
-    data_folder = "data-folders/data/"
-    model_output_dir = f"model-folders/{model_name}-structure_type-model"
+    data_folder = "data-folders/double-data/"
+    model_output_dir = f"model-folders/{model_name}-structure_type-double_model"
     main(model_name, data_folder, model_output_dir)

@@ -8,3 +8,5 @@ excel-outputs/
 *.html
 *.xlsx*
 *.csv
+
+temp.py

@@ -1,9 +1,11 @@
 from urllib.request import urlopen
+from urllib.error import URLError
 import cv2
 import numpy as np
 import pandas as pd
 import json
 
+import utils
 from utils import KEY
 
 
@@ -33,7 +35,7 @@ def make_url(api = "maps", metadata = False, **kwargs):
     url = base + "?" + "&".join(kwarg_strings)
     return url
 
-def get_double_image(point_x, point_y):
+def get_double_images(point_x, point_y):
     #get first image
     resp = urlopen(make_url(location = f"{point_y},{point_x}", 
                        size = "400x400",
@@ -68,36 +70,50 @@ def get_double_image(point_x, point_y):
         closest = min(panoramas, key = lambda x: x["distance"])
         if closest["distance"] < 50:
             heading = utils.heading(build_location, closest["location"])
-            resp = urlopen(make_url(pano = closest["panoId"], 
+            try:
+                resp = urlopen(make_url(pano = closest["panoId"], 
                        size = "400x400",
                        fov = str(120), 
                        return_error_code = "true",
                        source = "outdoor",
                        heading = str(heading),
                        key = KEY))
-            image2 = np.asarray(bytearray(resp.read()), dtype='uint8')
-            image2 = cv2.imdecode(image2, cv2.IMREAD_COLOR)
-            return (image, image2)
+            except URLError:
+                pass
+            else:
+                image2 = np.asarray(bytearray(resp.read()), dtype='uint8')
+                image2 = cv2.imdecode(image2, cv2.IMREAD_COLOR)
+                return (image, image2)
 
     return (image,)
 
 
-def save_image(image, image_folder, index):
-    cv2.imwrite((image_folder + f"image_{index}.jpg"), image)
+def save_image(image, image_folder, index, pan_index):
+    cv2.imwrite((image_folder + f"image_{index}_{pan_index}.jpg"), image)
 
 def main(image_folder, excel_fname, image_mask_fname ):
-    """
-    point_x = "-78.49973065"
-    point_y = "-0.080093856"
-    image = get_comp_image(point_x, point_y)
-    save_image(image, image_folder, "45")
+    missing = []
+    df = pd.read_excel(excel_fname)
+    data_mask = pd.Series([True for _ in range(len(df))], dtype="boolean")
+    for i in range(len(df)):
+        try:
+            images = get_double_images(df.loc[i, "POINT_X"], df.loc[i, "POINT_Y"])
+            for j in range(len(images)):
+                save_image(images[j], image_folder, i, j)
+        except:
+            image = np.zeros((400,400,3))
+            save_image(image, image_folder, i, 0)
 
-    """    
-    pass
+            missing.append(i)
+            data_mask.iloc[i] = False
+    print(f"Missing: {len(missing)} out of {len(df)} ({len(missing)/len(df):.0%})")
+    print(missing)
+    data_mask.to_csv(image_mask_fname, index = False)
+
    
 
 if __name__ == '__main__':
-    image_folder = 'image-folders/composite-images/'
+    image_folder = 'image-folders/double-images/'
     excel_fname = "UrbFloodVul_Overall_StudyArea_Points.xlsx"
-    image_mask_fname = "lost_images_mask_composite.csv"
-    main(image_folder, excel_fname, image_mask_fname )
+    image_mask_fname = "lost_images_mask_double.csv"
+    main(image_folder, excel_fname, image_mask_fname)
