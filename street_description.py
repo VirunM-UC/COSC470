@@ -12,45 +12,37 @@ import pandas as pd
 import random
 import math
 
-LABELS = ["concrete", "corrugated", "tile"]
+LABELS = ["paved", "cobble", "unfinished", "potholes"]
 LABEL2ID, ID2LABEL = dict(), dict()
 for i, label in enumerate(LABELS):
     LABEL2ID[label] = str(i)
     ID2LABEL[str(i)] = label
 
 
-TERMS = {
-    "Cement"        : "concrete",
-    "Concrete"      : "concrete",
-    "corrugated"    : "corrugated",
-    "tile"          : "tile"
-}
-
-def df_to_hfds_roof_type(df, mode):
+def df_to_hfds_street_description(df, mode):
     """
-    Pandas dataframe to huggingface dataset for classifying roof_type.
+    Pandas dataframe to huggingface dataset for classifying street_description.
     Args:
     df: dataframe
     mode: string, either "train" or "validate"
     """
 
-    df = df[df["roof_type"].map(lambda x: (x in TERMS.keys()))] #filter everything that is not in TERMS.keys()
-    df.loc[:, "roof_type"] = df["roof_type"].map(lambda x: TERMS[x]) #convert terms to class labels
-    roof_types = df["roof_type"].map(lambda x: int(LABEL2ID[x])).astype("uint8")
+    df = df[df["street_description"].map(lambda x: (x in LABELS))] #filter everything that is not in LABELS
+    street_descriptions = df["street_description"].map(lambda x: int(LABEL2ID[x])).astype("uint8")
     images = df.loc[:, "image"]
-    df_data = pd.DataFrame({"image": images, "roof_type": roof_types})
+    df_data = pd.DataFrame({"image": images, "street_description": street_descriptions})
     
     if mode == "train":
         print("train size (original): ", len(df_data))
     elif mode == "validate":
         print("validate size: ", len(df_data))
-    print(df_data["roof_type"].value_counts())
+    print(df_data["street_description"].value_counts())
 
     #Upsampling
     if mode == "train":
         df_classes = []
         for i in range(len(LABELS)):
-            df_classes.append(df_data.loc[df_data["roof_type"] == i])
+            df_classes.append(df_data.loc[df_data["street_description"] == i])
         max_index = max(range(len(LABELS)), key = lambda x: len(df_classes[x]))
         for i in range(len(LABELS)):
             if i == max_index:
@@ -58,10 +50,10 @@ def df_to_hfds_roof_type(df, mode):
             df_classes[i] = df_classes[i].sample(n = len(df_classes[max_index]), replace=True)
         df_data = pd.concat(df_classes)
         print("train_size (upsampled): ", len(df_data))
-        print(df_data["roof_type"].value_counts())
+        print(df_data["street_description"].value_counts())
 
     ds = Dataset.from_dict({"image": df_data["image"],
-                             "label": df_data["roof_type"]}, 
+                             "label": df_data["street_description"]}, 
                              
                              features = datasets.Features({"image": datasets.Image(),
                                                            "label": datasets.Value(dtype="uint8")}))
@@ -95,7 +87,10 @@ def metric_maker():
         predictions = np.argmax(predictions, axis=1)
         acc_result = accuracy.compute(predictions=predictions, references=labels)
 
-        f_result = f1.compute(predictions=predictions, references=labels, average="macro")    
+        f = f1.compute(predictions=predictions, references=labels, average=None)    
+        f_result = dict()
+        for index, value in enumerate(f["f1"]):
+            f_result[f"f1_{ID2LABEL[str(index)]}"] = value
         
         result = acc_result | f_result
         return result
@@ -108,8 +103,8 @@ def main(model_name, data_folder, model_output_dir):
     df_train = utils.load_data(data_folder, "training.pkl")
     df_validate = utils.load_data(data_folder, "validation.pkl")
 
-    hf_train = df_to_hfds_roof_type(df_train, mode = "train")
-    hf_validate = df_to_hfds_roof_type(df_validate, mode = "validate")
+    hf_train = df_to_hfds_street_description(df_train, mode = "train")
+    hf_validate = df_to_hfds_street_description(df_validate, mode = "validate")
 
     #preprocessor
     checkpoint = utils.CHECKPOINT[model_name]
@@ -162,6 +157,6 @@ def main(model_name, data_folder, model_output_dir):
 
 if __name__ == "__main__":
     model_name = "vit"
-    data_folder = "data-folders/data/"
-    model_output_dir = f"model-folders/{model_name}-roof_type-model"
+    data_folder = "data-folders/data/" #change this to street images
+    model_output_dir = f"model-folders/{model_name}-street_description-model"
     main(model_name, data_folder, model_output_dir)
