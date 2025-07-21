@@ -1,7 +1,9 @@
 Excel Dataset: 1484 records.
-attached: 230 (18%), semi-detached: 102 (8%), detached: 941 (73%)
-commercial: 243, residential: 1101, industrial: 36, natural: 31, agricultural: 22, mixed: 22, excluded: 29 (empty, "other", etc)
-brick: 206, cinder: 1098, steel: 20, construction: 48 (including combinations), wood: 32, mixed: 54 (excluding "construction"), excluded: 26 (empty)
+Structure type - attached: 230 (18%), semi-detached: 102 (8%), detached: 941 (73%)
+Land use - commercial: 243, residential: 1101, industrial: 36, natural: 31, agricultural: 22, mixed: 22, excluded: 29 (empty, "other", etc)
+Building material - cinder: 1098, brick: 206, steel: 20, construction: 48 (including combinations), wood: 32, mixed: 54 (excluding "construction"), excluded: 26 (empty)
+Roof type - concrete: 636, corrugated: 240, tile: 471, shingle: 61, gravel: 9, thatched: 3, tar: 3, other: ?
+Street type - paved: 868, cobble: 352, , potholes: 118, other: ?
 
 Started with structure_type because it had clean unordered classes with each data point having one unique class. Also it seems the most fruitful for visual classification.
 
@@ -170,6 +172,35 @@ ViT on structure_type with composite images:
 'eval_accuracy': 0.75, 'eval_f1_0': 0.54, 'eval_f1_1': 0.0
 compare with regular images:
 'eval_accuracy': 0.71, 'eval_f1_0': 0.47, 'eval_f1_1': 0.0
+
+
+Worth trying attributes that have higher interrater reliability. Apparently structure_type is low.
+Need to check roof type classes. Street type is also a good idea. Occupancy status weirdly has a decent score, maybe because of the undetermined class.
+Floors needs more research, but I could do some preliminary results.
+Drains as 2 classes (present or not) is also worth checking.
+
+Tried 2-class building_material on multi pano images.
+'eval_accuracy': 0.90, 'eval_f1_1': 0.62
+compared to 'eval_f1_1': 0.51 on regular images and 'eval_f1_1': 0.62 on composite. Interesting that it does as well a composite.
+-
+masking may improve the results.
+-
+An option is to have the classes be cinder, brick and other, which gives a bit more info while still avoiding the tiny classes.
+
+
+Notes on Datasets:
+NYC database - https://www.kaggle.com/datasets/new-york-city/nyc-buildings?select=PLUTODD16v2.pdf
+Has land use, detached vs attached and semi-detached for residential, number of floors.
+
+OSM collected database - https://www.nature.com/articles/s41597-024-04046-w#Abs1
+EUBUCCO - https://www.nature.com/articles/s41597-023-02040-2#Sec20
+Has residential vs non-residential
+
+French databases
+- https://data.europa.eu/data/datasets/61dc7157488f8cdb4283e3c3~~1?locale=en
+- https://data.europa.eu/data/datasets/64f8681944e2fc006a93e65b?locale=en
+Has material, roof type, prob more.
+
 
 TODO:
 Document make_url better.
