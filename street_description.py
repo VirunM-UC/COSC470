@@ -78,26 +78,6 @@ def preprocess_maker(processor):
     return transforms
 
 
-#metrics
-def metric_maker():
-    accuracy = evaluate.load("accuracy")
-    f1 = evaluate.load("f1")
-    def compute_metrics(eval_pred):
-        predictions, labels = eval_pred
-        predictions = np.argmax(predictions, axis=1)
-        acc_result = accuracy.compute(predictions=predictions, references=labels)
-
-        f = f1.compute(predictions=predictions, references=labels, average=None)    
-        f_result = dict()
-        for index, value in enumerate(f["f1"]):
-            f_result[f"f1_{ID2LABEL[str(index)]}"] = value
-        
-        result = acc_result | f_result
-        return result
-
-    return compute_metrics
-
-
 def main(model_name, data_folder, model_output_dir):
     #data
     df_train = utils.load_data(data_folder, "training.pkl")
@@ -150,7 +130,7 @@ def main(model_name, data_folder, model_output_dir):
         train_dataset=hf_train,
         eval_dataset=hf_validate,
         processing_class=image_processor,
-        compute_metrics=metric_maker(),
+        compute_metrics=utils.default_metric_maker(ID2LABEL),
     )
 
     trainer.train()

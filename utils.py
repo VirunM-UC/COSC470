@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 from io import BytesIO
 
+import evaluate
+
 KEY = "AIzaSyDE50N-WPn4s06OKhccYdDPXVnJ_k6O0bM"
 
 SESSION = "AJVsH2zr4yJoYwmzPr4ZwqEXJkYim51OtpmbIERTWXYHIWZ2W0mqPAwp6cHhCf9c-SKZZm2i1DfsAofbQCpCcnU6wA"
@@ -11,6 +13,8 @@ CHECKPOINT = {
     "swinv2": "microsoft/swinv2-base-patch4-window16-256", #Swin Transformer V2 (base: 350MB)
     "convnext": "facebook/convnext-base-224", #ConvNeXT (base: 350MB)
 }
+
+#Google Street View
 
 def heading(build_loc, pan_loc):
     """
@@ -50,6 +54,8 @@ def distance(loc1, loc2):
     return d
 
 
+#Data
+
 def load_data(data_folder, file_name):
     """
     Takes a pickled dataframe and returns a Pandas DataFrame
@@ -82,3 +88,24 @@ def df_to_excel(df, file_path):
 
     # Close the Pandas Excel writer and output the Excel file.
     writer.close()
+
+
+#Huggingface
+def default_metric_maker(id2label):
+    accuracy = evaluate.load("accuracy")
+    f1 = evaluate.load("f1")
+    def compute_metrics(eval_pred):
+        predictions, labels = eval_pred
+        predictions = np.argmax(predictions, axis=1)
+        acc_result = accuracy.compute(predictions=predictions, references=labels)
+
+        f = f1.compute(predictions=predictions, references=labels, average=None)    
+        f_result = dict()
+        f_result["f1_macro"] = sum(f["f1"]) / len(f["f1"])
+        for index, value in enumerate(f["f1"]):
+            f_result[f"f1_{id2label[str(index)]}"] = value
+        
+        result = acc_result | f_result
+        return result
+
+    return compute_metrics
