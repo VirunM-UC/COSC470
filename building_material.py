@@ -40,15 +40,7 @@ def df_to_hfds_building_material(df, mode):
 
     #Upsampling
     if mode == "train":
-        df_classes = []
-        for i in range(len(LABELS)):
-            df_classes.append(df_data.loc[df_data["building_material"] == i])
-        max_index = max(range(len(LABELS)), key = lambda x: len(df_classes[x]))
-        for i in range(len(LABELS)):
-            if i == max_index:
-                continue
-            df_classes[i] = df_classes[i].sample(n = len(df_classes[max_index]), replace=True)
-        df_data = pd.concat(df_classes)
+        df_data = utils.upsample(df_data, LABELS, "structure_type")
         print("train_size (upsampled): ", len(df_data))
         print(df_data["building_material"].value_counts())
 

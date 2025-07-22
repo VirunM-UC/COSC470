@@ -89,6 +89,21 @@ def df_to_excel(df, file_path):
     # Close the Pandas Excel writer and output the Excel file.
     writer.close()
 
+def upsample(df, labels, attribute):
+    df_classes = []
+    for i in range(len(labels)):
+        df_classes.append(df.loc[df[attribute] == i])
+    max_index = max(range(len(labels)), key = lambda x: len(df_classes[x]))
+    for i in range(len(labels)):
+        if i == max_index:
+            continue
+        num_copies = len(df_classes[max_index]) // len(df_classes[i])
+        remainder = len(df_classes[max_index]) % len(df_classes[i])
+        df_classes[i] = pd.concat([df_classes[i]]*num_copies + [df_classes[i].sample(n = remainder, replace=False)])
+    df_data = pd.concat(df_classes).sample(frac=1) #shuffle
+
+    return df_data
+
 
 #Huggingface
 def default_metric_maker(id2label):

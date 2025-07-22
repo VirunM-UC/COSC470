@@ -200,7 +200,9 @@ French databases
 - https://data.europa.eu/data/datasets/61dc7157488f8cdb4283e3c3~~1?locale=en
 - https://data.europa.eu/data/datasets/64f8681944e2fc006a93e65b?locale=en
 Has material, roof type, prob more.
-
+Meterials - Stone, millstone, brick, wood, cinder (concrete), agglomerate, other, undetermined
+cinder: 15k, brick: 9k, wood: 3k
+Dpt 1 has 300k records. Total dataset has 20 million.
 
 ViT on roof_type:
 'eval_accuracy': 0.53, "eval_macro_f1": 0.49
@@ -208,8 +210,10 @@ Adding remote sensing would be good.
 
 ViT on street_description:
 'eval_f1_paved': 0.80, 'eval_f1_cobble': 0.72, 'eval_f1_unfinished': 0.47, 'eval_f1_potholes': 0.11
+Potholes is likely to be bad because we don't have a picture of the full road. Don't know why unfinished is so low though.
+
 
 TODO:
-Document make_url better.
+Document make_url better, and modularize it.
 Need to also analyse building condition outputs and landuse outputs.
 Need to implement more attributes.

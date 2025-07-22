@@ -39,15 +39,7 @@ def df_to_hfds_structure_type(df, mode):
 
     #Upsampling
     if mode == "train":
-        df_classes = []
-        for i in range(len(LABELS)):
-            df_classes.append(df_data.loc[df_data["structure_type"] == i])
-        max_index = max(range(len(LABELS)), key = lambda x: len(df_classes[x]))
-        for i in range(len(LABELS)):
-            if i == max_index:
-                continue
-            df_classes[i] = df_classes[i].sample(n = len(df_classes[max_index]), replace=True)
-        df_data = pd.concat(df_classes)
+        df_data = utils.upsample(df_data, LABELS, "structure_type")
         print("train_size (upsampled): ", len(df_data))
         print(df_data["structure_type"].value_counts())
 
@@ -136,6 +128,6 @@ def main(model_name, data_folder, model_output_dir):
 
 if __name__ == "__main__":
     model_name = "vit"
-    data_folder = "data-folders/double-data/"
-    model_output_dir = f"model-folders/{model_name}-structure_type-double_model"
+    data_folder = "data-folders/data/"
+    model_output_dir = f"model-folders/{model_name}-structure_type-model"
     main(model_name, data_folder, model_output_dir)
