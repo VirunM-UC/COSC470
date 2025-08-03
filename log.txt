@@ -213,7 +213,24 @@ ViT on street_description:
 Potholes is likely to be bad because we don't have a picture of the full road. Don't know why unfinished is so low though.
 
 
+TRAINING ON FRENCH DATA
+CSV file.
+A lot of the buildings do not have street view coverage.
+Lots of occlusion.
+Duplicate records. Fixed with SELECT DISTINCT
+-
+Note: French data is not only more numerous, but I collected a lower fov as well, so that might have an effect.
+-
+Missing: 1381 out of 7500 (18%)
+
+
+I collect images with max fov. It would be better to zoom in more into the building to get more building relevant data (especially for material).
+However, since the images aren't guaranteed to be pointing at the building, I need a high fov so that the building is more likely to be in frame.
+Additionally, we may need an image of the whole building (e.g.- for structure type) and the panorama is too close.
+-
+Maybe it would be better to collect default fov pictures (fov=90).
+
 TODO:
-Document make_url better, and modularize it.
+Document make_url better, modularize it.
 Need to also analyse building condition outputs and landuse outputs.
 Need to implement more attributes.
