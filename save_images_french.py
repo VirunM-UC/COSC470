@@ -59,7 +59,7 @@ def get_image(point_x, point_y):
 def save_image(image, image_folder, index):
     cv2.imwrite((image_folder + f"image_{index}.jpg"), image)
 
-def main(image_folder, csv_fname, image_mask_fname, included_indices_fname):
+def main(image_folder, csv_fname, included_indices_fname):
     missing = []
     df = pd.read_csv(csv_fname)
 
@@ -86,7 +86,8 @@ def main(image_folder, csv_fname, image_mask_fname, included_indices_fname):
             image_mask.iloc[i] = False
     print(f"Missing: {len(missing)} out of {len(included_indices)} ({len(missing)/len(included_indices):.0%})")
     print(missing)
-    image_mask.to_csv(image_mask_fname, index = False)
+    
+    included_indices = included_indices[included_indices.iloc[:, 0].map(lambda x: image_mask.iloc[x,0])]
     included_indices.to_csv(included_indices_fname, index = False)
         
         
@@ -94,7 +95,6 @@ def main(image_folder, csv_fname, image_mask_fname, included_indices_fname):
 if __name__ == '__main__':
     image_folder = 'image-folders/french-images/'
     csv_fname = "french_records.csv"
-    image_mask_fname = "lost_images_mask_french.csv"
     included_indices_fname = "included_indices.csv"
-    main(image_folder, csv_fname, image_mask_fname, included_indices_fname)
+    main(image_folder, csv_fname, included_indices_fname)
 
