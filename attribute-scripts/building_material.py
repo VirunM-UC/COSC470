@@ -12,7 +12,8 @@ import pandas as pd
 import random
 import math
 
-LABELS = ["cinder", "brick"] 
+LABELS = ["beton", "briques", "bois"] # ["cinder", "brick"] 
+COLUMN_NAME = "mur" # "building_material"
 LABEL2ID, ID2LABEL = dict(), dict()
 for i, label in enumerate(LABELS):
     LABEL2ID[label] = str(i)
@@ -27,8 +28,8 @@ def df_to_hfds_building_material(df, mode):
     mode: string, either "train" or "validate"
     """
 
-    df = df[df["building_material"].map(lambda x: (x in LABELS))] #filter everything that is not in LABELS
-    building_materials = df["building_material"].map(lambda x: int(LABEL2ID[x])).astype("uint8")
+    df = df[df[COLUMN_NAME].map(lambda x: (x in LABELS))] #filter everything that is not in LABELS
+    building_materials = df[COLUMN_NAME].map(lambda x: int(LABEL2ID[x])).astype("uint8")
     images = df.loc[:, "image"]
     df_data = pd.DataFrame({"image": images, "building_material": building_materials})
     
@@ -40,7 +41,7 @@ def df_to_hfds_building_material(df, mode):
 
     #Upsampling
     if mode == "train":
-        df_data = utils.upsample(df_data, LABELS, "structure_type")
+        df_data = utils.upsample(df_data, LABELS, "building_material")
         print("train_size (upsampled): ", len(df_data))
         print(df_data["building_material"].value_counts())
 

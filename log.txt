@@ -222,13 +222,29 @@ Duplicate records. Fixed with SELECT DISTINCT
 Note: French data is not only more numerous, but I collected a lower fov as well, so that might have an effect.
 -
 Missing: 1381 out of 7500 (18%)
-
+-
+'eval_accuracy': 0.59, 'eval_f1_macro': 0.59, 'eval_f1_beton': 0.60, 'eval_f1_briques': 0.57, 'eval_f1_bois': 0.61
+compare with 'eval_f1_brick': 0.51 (training on only cinder and brick), on composite images that went to 0.62
+Technically better than both since we have more classes now, but this is still quite low.
+It would likely increase if we did composite images, but I think there's a smarter way to get more of the building in the image.
 
 I collect images with max fov. It would be better to zoom in more into the building to get more building relevant data (especially for material).
 However, since the images aren't guaranteed to be pointing at the building, I need a high fov so that the building is more likely to be in frame.
 Additionally, we may need an image of the whole building (e.g.- for structure type) and the panorama is too close.
 -
 Maybe it would be better to collect default fov pictures (fov=90).
+
+Object detection
+-
+COCO dataset which is the premier dataset for object detection does not have a building class. Likely, I will ave to use zero shot object detection.
+-
+maybe I can object detect on the whole pano to find the building and then get a picture specifically of that area.
+I could also object detect it in the regular image and mask out irrelevant details.
+-
+Tests:
+See how well zero shot object detection works on normal images
+See if we can get the equirectangular projection from requesting map tiles API (and if we can change or calculate the heading)
+see how well object detection works on that projection
 
 TODO:
 Document make_url better, modularize it.
