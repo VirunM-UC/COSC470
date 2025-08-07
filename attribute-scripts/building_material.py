@@ -5,22 +5,26 @@ from transformers import DefaultDataCollator
 import evaluate
 from transformers import AutoModelForImageClassification, TrainingArguments, Trainer
 
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import utils
 
 import numpy as np
 import pandas as pd
-import random
-import math
+from PIL import Image
 
-LABELS = ["beton", "briques", "bois"] # ["cinder", "brick"] 
-COLUMN_NAME = "mur" # "building_material"
+#LABELS = ["beton", "briques", "bois"] 
+LABELS = ["cinder", "brick"] 
+#COLUMN_NAME = "mur" 
+COLUMN_NAME = "building_material"
 LABEL2ID, ID2LABEL = dict(), dict()
 for i, label in enumerate(LABELS):
     LABEL2ID[label] = str(i)
     ID2LABEL[str(i)] = label
 
 
-def df_to_hfds_building_material(df, mode):
+def df_to_hfds_building_material(df, mode, df_bounding_boxes = None):
     """
     Pandas dataframe to huggingface dataset for classifying building material.
     Args:
@@ -28,13 +32,24 @@ def df_to_hfds_building_material(df, mode):
     mode: string, either "train" or "validate"
     """
 
-    df = df[df[COLUMN_NAME].map(lambda x: (x in LABELS))] #filter everything that is not in LABELS
-    building_materials = df[COLUMN_NAME].map(lambda x: int(LABEL2ID[x])).astype("uint8")
-    images = df.loc[:, "image"]
-    df_data = pd.DataFrame({"image": images, "building_material": building_materials})
+    df_data = df.loc[:, ["image", COLUMN_NAME]]
+    df_data = df_data[df_data[COLUMN_NAME].map(lambda x: (x in LABELS))] #filter everything that is not in LABELS
+    df_data[COLUMN_NAME] = df_data[COLUMN_NAME].map(lambda x: int(LABEL2ID[x])).astype("uint8")
     
+    if df_bounding_boxes is not None:
+        #cropping to bounding boxes
+        df_data = df_data.join(df_bounding_boxes, how="left")
+        df_data = df_data[~pd.isna(df_data.iloc[:,2])] #filter out NA values (ones with no bounding box)
+        def crop_fn(row):
+            #row has index ["image", COLUMN_NAME, "xmin", "ymin", "xmax", "ymax", "score", "dist_squared"]
+            row["image"] = row["image"].crop((row["xmin"], row["ymin"], row["xmax"], row["ymax"]))
+            return row           
+        df_data = df_data.apply(crop_fn, axis="columns", result_type="broadcast")
+        df_data = df_data.loc[:, ["image", COLUMN_NAME]]
+
+
     if mode == "train":
-        print("train size (original): ", len(df_data))
+        print("train size (original): ", len(df_data))         
     elif mode == "validate":
         print("validate size: ", len(df_data))
     print(df_data["building_material"].value_counts())
@@ -72,12 +87,14 @@ def preprocess_maker(processor):
     return transforms
 
 
-def main(model_name, data_folder, model_output_dir):
+def main(model_name, data_folder, bounding_boxes_fname, model_output_dir):
     #data
     df_train = utils.load_data(data_folder, "training.pkl")
     df_validate = utils.load_data(data_folder, "validation.pkl")
 
-    hf_train = df_to_hfds_building_material(df_train, mode = "train")
+    df_bounding_boxes = pd.read_csv(bounding_boxes_fname, index_col = 0)
+
+    hf_train = df_to_hfds_building_material(df_train, mode = "train", df_bounding_boxes = df_bounding_boxes)
     hf_validate = df_to_hfds_building_material(df_validate, mode = "validate")
 
     #preprocessor
@@ -131,6 +148,7 @@ def main(model_name, data_folder, model_output_dir):
 
 if __name__ == "__main__":
     model_name = "vit"
-    data_folder = "data-folders/french-data/"
-    model_output_dir = f"model-folders/{model_name}-building_material-french_model"
-    main(model_name, data_folder, model_output_dir)
+    data_folder = "data-folders/data/"
+    bounding_boxes_fname = "bounding_boxes.csv"
+    model_output_dir = f"model-folders/{model_name}-building_material-model"
+    main(model_name, data_folder, bounding_boxes_fname, model_output_dir)

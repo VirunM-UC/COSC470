@@ -241,6 +241,11 @@ COCO dataset which is the premier dataset for object detection does not have a b
 maybe I can object detect on the whole pano to find the building and then get a picture specifically of that area.
 I could also object detect it in the regular image and mask out irrelevant details.
 -
+On normal images:
+'eval_f1_macro': 0.56, 'eval_f1_cinder': 0.91, 'eval_f1_brick': 0.20
+Much worse than baseline. Not sure about my selection criteria for boxes. Also there was a loss of 100 images that didn't have predictions.
+I also cropped instead of masked. Don't know if that made a difference. Maybe the resizing made it harder to tell.
+
 Tests:
 See how well zero shot object detection works on normal images
 See if we can get the equirectangular projection from requesting map tiles API (and if we can change or calculate the heading)
