@@ -6,7 +6,7 @@ import evaluate
 
 KEY = "AIzaSyDE50N-WPn4s06OKhccYdDPXVnJ_k6O0bM"
 
-SESSION = "AJVsH2zr4yJoYwmzPr4ZwqEXJkYim51OtpmbIERTWXYHIWZ2W0mqPAwp6cHhCf9c-SKZZm2i1DfsAofbQCpCcnU6wA"
+SESSION = "AJVsH2zYEUroVEyRK37Pje8q_9CG57St6H7o3bE9vYMyP4YWqqqjoL9iUCoq6f_kHPtwuaneUaU_3_Dh5WQGojAqvg"
 
 CHECKPOINT = {
     "vit": "google/vit-base-patch16-224-in21k", #ViT (base: 350MB)

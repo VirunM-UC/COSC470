@@ -200,9 +200,14 @@ French databases
 - https://data.europa.eu/data/datasets/61dc7157488f8cdb4283e3c3~~1?locale=en
 - https://data.europa.eu/data/datasets/64f8681944e2fc006a93e65b?locale=en
 Has material, roof type, prob more.
+Dpt 1 has 300k records. Total dataset has 20 million.
 Meterials - Stone, millstone, brick, wood, cinder (concrete), agglomerate, other, undetermined
 cinder: 15k, brick: 9k, wood: 3k
-Dpt 1 has 300k records. Total dataset has 20 million.
+Roof type - tiles (tuiles), concrete (beton),  shingles (Slates, ardoises), zinc aluminium, other, undetermined
+tiles: 197k, concrete: 3k, shingles: 2k, zinc aluminium: 991
+Dpt 75 (Paris) has 425k records.
+cinder: 30k, brick: 25k, wood: 500
+tiles: 27k, concrete: 39k, shingles: 15k, zinc aluminium: 125k
 
 ViT on roof_type:
 'eval_accuracy': 0.53, "eval_macro_f1": 0.49
