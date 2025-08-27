@@ -12,7 +12,7 @@ import utils
 
 import numpy as np
 import pandas as pd
-from PIL import Image
+from PIL import Image, ImageDraw
 
 #LABELS = ["beton", "briques", "bois"] 
 LABELS = ["cinder", "brick"] 
@@ -23,6 +23,20 @@ for i, label in enumerate(LABELS):
     LABEL2ID[label] = str(i)
     ID2LABEL[str(i)] = label
 
+#semantic preprocessing functions for use in df_to_hfds_building_material
+def crop_fn(row):
+    #row has index ["image", COLUMN_NAME, "xmin", "ymin", "xmax", "ymax", "score", "dist_squared"]
+    row["image"] = row["image"].crop((row["xmin"], row["ymin"], row["xmax"], row["ymax"]))
+    return row 
+
+def mask_fn(row):
+            #row has index ["image", COLUMN_NAME, "xmin", "ymin", "xmax", "ymax", "score", "dist_squared"]
+            im2 = Image.merge("RGB", [Image.effect_noise(size=row["image"].size, sigma= 5) for _ in range(3)])
+            mask = Image.new("L", row["image"].size, 0)
+            draw = ImageDraw.Draw(mask)
+            draw.rectangle([row["xmin"], row["ymin"], row["xmax"], row["ymax"]], fill=255)
+            row["image"] = Image.composite(row["image"], im2, mask)
+            return row 
 
 def df_to_hfds_building_material(df, mode, df_bounding_boxes = None):
     """
@@ -37,15 +51,13 @@ def df_to_hfds_building_material(df, mode, df_bounding_boxes = None):
     df_data[COLUMN_NAME] = df_data[COLUMN_NAME].map(lambda x: int(LABEL2ID[x])).astype("uint8")
     
     if df_bounding_boxes is not None:
-        #cropping to bounding boxes
+        #cropping/masking bounding boxes
         df_data = df_data.join(df_bounding_boxes, how="left")
         df_data = df_data[~pd.isna(df_data.iloc[:,2])] #filter out NA values (ones with no bounding box)
-        def crop_fn(row):
-            #row has index ["image", COLUMN_NAME, "xmin", "ymin", "xmax", "ymax", "score", "dist_squared"]
-            row["image"] = row["image"].crop((row["xmin"], row["ymin"], row["xmax"], row["ymax"]))
-            return row           
-        df_data = df_data.apply(crop_fn, axis="columns", result_type="broadcast")
+        df_data = df_data.apply(mask_fn, axis="columns", result_type="broadcast")
         df_data = df_data.loc[:, ["image", COLUMN_NAME]]
+        #for i in range(10):
+        #    df_data.iloc[i, 0].save(f"image-folders/test-images/bb_mask_{i}.jpg")
 
 
     if mode == "train":

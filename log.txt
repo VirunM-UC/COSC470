@@ -241,15 +241,18 @@ Maybe it would be better to collect default fov pictures (fov=90).
 
 Object detection
 -
-COCO dataset which is the premier dataset for object detection does not have a building class. Likely, I will ave to use zero shot object detection.
+COCO dataset which is the premier dataset for object detection does not have a building class. Likely, I will have to use zero shot object detection.
 -
 maybe I can object detect on the whole pano to find the building and then get a picture specifically of that area.
 I could also object detect it in the regular image and mask out irrelevant details.
 -
-On normal images:
+On normal images (building_material), cropped:
 'eval_f1_macro': 0.56, 'eval_f1_cinder': 0.91, 'eval_f1_brick': 0.20
 Much worse than baseline. Not sure about my selection criteria for boxes. Also there was a loss of 100 images that didn't have predictions.
 I also cropped instead of masked. Don't know if that made a difference. Maybe the resizing made it harder to tell.
+masked:
+eval_f1_macro': 0.45, 'eval_f1_cinder': 0.91, 'eval_f1_brick': 0.0
+masked is even worse.
 
 Tests:
 See how well zero shot object detection works on normal images
