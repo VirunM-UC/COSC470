@@ -238,6 +238,12 @@ However, since the images aren't guaranteed to be pointing at the building, I ne
 Additionally, we may need an image of the whole building (e.g.- for structure type) and the panorama is too close.
 -
 Maybe it would be better to collect default fov pictures (fov=90).
+-
+TRAINING ON PARIS DATA
+The parcelle table that contains lat and lon only contains 77k of the 425k records.
+-
+Missing: 222 out of 8456 (3%)
+-
 
 Object detection
 -

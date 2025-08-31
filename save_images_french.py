@@ -59,18 +59,21 @@ def get_image(point_x, point_y):
 def save_image(image, image_folder, index):
     cv2.imwrite((image_folder + f"image_{index}.jpg"), image)
 
-def main(image_folder, csv_fname, included_indices_fname):
+def main(image_folder, csv_fname, included_indices_fname, sample = False):
     missing = []
     df = pd.read_csv(csv_fname)
 
-    #collect included indices
-    classes = []
-    for i in ["beton", "briques", "bois"]:
-        mask = (df["mur"] == i)
-        class_indices = pd.Series([i for i in range(len(df)) if mask.iloc[i]])
-        class_indices = class_indices.sample(n = 2500, replace = False, random_state = RANDOM_STATE)
-        classes.append(class_indices)
-    included_indices = pd.concat(classes)
+    if sample == True:
+        #collect included indices
+        classes = []
+        for i in ["beton", "briques", "bois"]:
+            mask = (df["mur"] == i)
+            class_indices = pd.Series([i for i in range(len(df)) if mask.iloc[i]])
+            class_indices = class_indices.sample(n = 2500, replace = False, random_state = RANDOM_STATE)
+            classes.append(class_indices)
+        included_indices = pd.concat(classes)
+    else:
+        included_indices = pd.series(range(len(df)))
     print("Number of included records: ", len(included_indices))
 
     image_mask = pd.Series([True for _ in range(len(df))], dtype="boolean")
@@ -93,8 +96,8 @@ def main(image_folder, csv_fname, included_indices_fname):
         
 
 if __name__ == '__main__':
-    image_folder = 'image-folders/french-images/'
-    csv_fname = "french_records.csv"
-    included_indices_fname = "included_indices.csv"
-    main(image_folder, csv_fname, included_indices_fname)
+    image_folder = 'image-folders/paris-images/'
+    csv_fname = "paris_records.csv"
+    included_indices_fname = "included_indices_paris.csv"
+    main(image_folder, csv_fname, included_indices_fname, sample = False)
 
