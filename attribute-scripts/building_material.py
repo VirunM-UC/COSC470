@@ -30,15 +30,21 @@ def crop_fn(row):
     return row 
 
 def mask_fn(row):
-            #row has index ["image", COLUMN_NAME, "xmin", "ymin", "xmax", "ymax", "score", "dist_squared"]
-            im2 = Image.merge("RGB", [Image.effect_noise(size=row["image"].size, sigma= 5) for _ in range(3)])
-            mask = Image.new("L", row["image"].size, 0)
-            draw = ImageDraw.Draw(mask)
-            draw.rectangle([row["xmin"], row["ymin"], row["xmax"], row["ymax"]], fill=255)
-            row["image"] = Image.composite(row["image"], im2, mask)
-            return row 
+    #row has index ["image", COLUMN_NAME, "xmin", "ymin", "xmax", "ymax", "score", "dist_squared"]
+    im2 = Image.merge("RGB", [Image.effect_noise(size=row["image"].size, sigma= 5) for _ in range(3)])
+    mask = Image.new("L", row["image"].size, 0)
+    draw = ImageDraw.Draw(mask)
+    draw.rectangle([row["xmin"], row["ymin"], row["xmax"], row["ymax"]], fill=255)
+    row["image"] = Image.composite(row["image"], im2, mask)
+    return row 
 
-def df_to_hfds_building_material(df, mode, df_bounding_boxes = None):
+def segmask_fn(row):
+    #row has index ["image", COLUMN_NAME, "mask"]
+    im2 = Image.merge("RGB", [Image.effect_noise(size=row["image"].size, sigma= 5) for _ in range(3)])
+    row["image"] = Image.composite(row["image"], im2, row["mask"])
+    return row
+
+def df_to_hfds_building_material(df, mode, df_bounding_boxes = None, df_segmasks = None):
     """
     Pandas dataframe to huggingface dataset for classifying building material.
     Args:
@@ -52,12 +58,18 @@ def df_to_hfds_building_material(df, mode, df_bounding_boxes = None):
     
     if df_bounding_boxes is not None:
         #cropping/masking bounding boxes
-        df_data = df_data.join(df_bounding_boxes, how="left")
+        df_data = df_data.join(df_bounding_boxes, how="inner")
         df_data = df_data[~pd.isna(df_data.iloc[:,2])] #filter out NA values (ones with no bounding box)
         df_data = df_data.apply(mask_fn, axis="columns", result_type="broadcast")
         df_data = df_data.loc[:, ["image", COLUMN_NAME]]
-        #for i in range(10):
-        #    df_data.iloc[i, 0].save(f"image-folders/test-images/bb_mask_{i}.jpg")
+    elif df_segmasks is not None:
+        df_data = df_data.join(df_segmasks, how="inner")
+        df_data = df_data.apply(segmask_fn, axis="columns", result_type="broadcast")
+        df_data = df_data.loc[:, ["image", COLUMN_NAME]]
+
+        
+        for i in range(10):
+            df_data.iloc[i, 0].save(f"image-folders/test-images/segmask_{i}.jpg")
 
 
     if mode == "train":
@@ -99,14 +111,23 @@ def preprocess_maker(processor):
     return transforms
 
 
-def main(model_name, data_folder, bounding_boxes_fname, model_output_dir):
+def main(model_name, data_folder, model_output_dir, bounding_boxes_fname = None, segmasks_fname = None):
     #data
     df_train = utils.load_data(data_folder, "training.pkl")
     df_validate = utils.load_data(data_folder, "validation.pkl")
 
-    df_bounding_boxes = pd.read_csv(bounding_boxes_fname, index_col = 0)
+    #semantic preprocessing
+    if bounding_boxes_fname is not None:
+        df_bounding_boxes = pd.read_csv(bounding_boxes_fname, index_col = 0)
+        df_segmasks = None
+    elif segmasks_fname is not None:
+        df_bounding_boxes = None
+        df_segmasks = pd.read_pickle(segmasks_fname)
+    else:
+        df_bounding_boxes = None
+        df_segmasks = None
 
-    hf_train = df_to_hfds_building_material(df_train, mode = "train", df_bounding_boxes = df_bounding_boxes)
+    hf_train = df_to_hfds_building_material(df_train, mode = "train", df_bounding_boxes = df_bounding_boxes, df_segmasks = df_segmasks)
     hf_validate = df_to_hfds_building_material(df_validate, mode = "validate")
 
     #preprocessor
@@ -162,5 +183,6 @@ if __name__ == "__main__":
     model_name = "vit"
     data_folder = "data-folders/data/"
     bounding_boxes_fname = "bounding_boxes.csv"
+    segmasks_fname = "semantic_masks.pkl"
     model_output_dir = f"model-folders/{model_name}-building_material-model"
-    main(model_name, data_folder, bounding_boxes_fname, model_output_dir)
+    main(model_name, data_folder, model_output_dir, segmasks_fname = segmasks_fname)

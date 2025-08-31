@@ -22,7 +22,7 @@ def main(image_folder, semantic_masks_fname):
     predictions_list = detector(images)
 
     image_masks = map(get_mask, predictions_list)
-    df = pd.DataFrame(image_masks, index=indices)
+    df = pd.DataFrame({"mask": image_masks}, index=indices)
     df = df[~pd.isna(df.iloc[:,0])] #filter out NA values (ones with no building mask)
     df.to_pickle(semantic_masks_fname)
 

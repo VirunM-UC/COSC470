@@ -181,7 +181,7 @@ Drains as 2 classes (present or not) is also worth checking.
 
 Tried 2-class building_material on multi pano images.
 'eval_accuracy': 0.90, 'eval_f1_1': 0.62
-compared to 'eval_f1_1': 0.51 on regular images and 'eval_f1_1': 0.62 on composite. Interesting that it does as well a composite.
+compared to 'eval_f1_1': 0.51 on regular images and 'eval_f1_1': 0.62 on composite. Interesting that it does as well as composite.
 -
 masking may improve the results.
 -
@@ -253,6 +253,10 @@ I also cropped instead of masked. Don't know if that made a difference. Maybe th
 masked:
 eval_f1_macro': 0.45, 'eval_f1_cinder': 0.91, 'eval_f1_brick': 0.0
 masked is even worse.
+
+Working on semantic segmentation.
+'eval_f1_macro': 0.45, 'eval_f1_cinder': 0.91, 'eval_f1_brick': 0.0
+Also nothing.
 
 Tests:
 See how well zero shot object detection works on normal images
