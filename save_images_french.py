@@ -36,24 +36,24 @@ def main(image_folder, csv_fname, included_indices_fname, sample = False):
             classes.append(class_indices)
         included_indices = pd.concat(classes)
     else:
-        included_indices = pd.series(range(len(df)))
+        included_indices = pd.Series(range(len(df)))
     print("Number of included records: ", len(included_indices))
 
-    image_mask = pd.Series([True for _ in range(len(df))], dtype="boolean")
-    for i in included_indices: #len(df)
+    respond_mask = pd.Series([True for _ in range(len(included_indices))], dtype="boolean")
+    for i in range(len(included_indices)):
         try:
-            image = get_image(df.loc[i, "lon"], df.loc[i, "lat"])
-            save_image(image, image_folder, i)
+            image = get_image(df.loc[included_indices[i], "lon"], df.loc[included_indices[i], "lat"])
+            save_image(image, image_folder, included_indices[i])
         except:
             image = np.zeros((400,400,3))
-            save_image(image, image_folder, i)
+            save_image(image, image_folder, included_indices[i])
 
-            missing.append(i)
-            image_mask.iloc[i] = False
+            missing.append(included_indices[i])
+            respond_mask.iloc[i] = False
+    included_indices = included_indices[respond_mask]
     print(f"Missing: {len(missing)} out of {len(included_indices)} ({len(missing)/len(included_indices):.0%})")
     print(missing)
     
-    included_indices = included_indices[included_indices.iloc[:, 0].map(lambda x: image_mask.iloc[x,0])]
     included_indices.to_csv(included_indices_fname, index = False)
         
         
