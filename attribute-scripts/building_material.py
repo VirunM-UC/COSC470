@@ -67,10 +67,6 @@ def df_to_hfds_building_material(df, mode, df_bounding_boxes = None, df_segmasks
         df_data = df_data.apply(segmask_fn, axis="columns", result_type="broadcast")
         df_data = df_data.loc[:, ["image", COLUMN_NAME]]
 
-        
-        for i in range(10):
-            df_data.iloc[i, 0].save(f"image-folders/test-images/segmask_{i}.jpg")
-
 
     if mode == "train":
         print("train size (original): ", len(df_data))         

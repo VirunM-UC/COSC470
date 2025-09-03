@@ -4,28 +4,8 @@ import numpy as np
 import pandas as pd
 import json
 
+from utils import make_url
 from utils import KEY
-
-
-def make_url(metadata = False, **kwargs):
-    """
-    Creates a url request for Google Maps Static Street View API
-    For example, https://maps.googleapis.com/maps/api/streetview/metadata?location={point_y},{point_x}&source=outdoor&key={KEY}
-    or https://maps.googleapis.com/maps/api/streetview?size=400x400&fov=120&return_error_code=true&source=outdoor&location={point_y},{point_x}&key={KEY}
-
-    Paramaters:
-    metadata: Boolean for whether to return the image request or the metadata request.
-    **kwargs: All the parameters to pass to the API with their values in string form.
-    """
-    base = "https://maps.googleapis.com/maps/api/streetview"
-    if metadata == True:
-        base += "/metadata"
-    kwarg_strings = []
-    for kwarg in kwargs:
-        kwarg_str = kwarg + "=" +  kwargs[kwarg]
-        kwarg_strings.append(kwarg_str)
-    url = base + "?" + "&".join(kwarg_strings)
-    return url
 
 def get_comp_image(point_x, point_y):
     #get panorama metadata

@@ -5,52 +5,12 @@ import numpy as np
 import pandas as pd
 import json
 
-import utils
-from utils import KEY
-
-
-def make_url(api = "maps", metadata = False, **kwargs):
-    """
-    Creates a url request for two Google Maps APIs: the Static Street View API and the Map Tiles API.
-    This is mainly  for formatting, and the actual syntax for the API request is the responsibility of the user, but is described below.
-
-    Static Street View API
-    Image request syntax is described here: https://developers.google.com/maps/documentation/streetview/request-streetview
-    - EXAMPLE: "https://maps.googleapis.com/maps/api/streetview?size=400x400&fov=120&return_error_code=true&source=outdoor&location={point_y},{point_x}&key={KEY}"
-    Metadata request syntax is described here: https://developers.google.com/maps/documentation/streetview/metadata
-    - EXAMPLE: "https://maps.googleapis.com/maps/api/streetview/metadata?location={point_y},{point_x}&source=outdoor&key={KEY}"
-
-    Map Tiles API
-    Metadata request is described here: https://developers.google.com/maps/documentation/tile/streetview?hl=en#street_view_metadata 
-    - EXAMPLE: "https://tile.googleapis.com/v1/streetview/metadata?session={SESSION}&key={KEY}&lat={lat}&lng={lng}&radius={radius}"
-
-    Paramaters:
-    api: string, either "maps" or "tile", which selects the API to use.
-    metadata: Boolean for whether to return the image request or the metadata request.
-    **kwargs: All the parameters to pass to the API with their values in string form.
-    
-    Returns: the url request as a string.
-    """
-    if api == "maps":
-        base = "https://maps.googleapis.com/maps/api/streetview"
-        if metadata == True:
-            base += "/metadata"
-    elif api == "tile":
-        base = "https://tile.googleapis.com/v1/streetview"
-        if metadata == True:
-            base += "/metadata"
-        else:
-            base += "/tiles/0/0/0"
-    kwarg_strings = []
-    for kwarg in kwargs:
-        kwarg_str = kwarg + "=" +  kwargs[kwarg]
-        kwarg_strings.append(kwarg_str)
-    url = base + "?" + "&".join(kwarg_strings)
-    return url
+from utils import make_url
+from utils import KEY, SESSION
 
 def get_pano(point_x, point_y):
     metadata_url = make_url(api = "tile", metadata = True, 
-                            session = utils.SESSION, 
+                            session = SESSION, 
                             key = KEY, 
                             lat = str(point_y), 
                             lng = str(point_x),
@@ -61,7 +21,7 @@ def get_pano(point_x, point_y):
 
     resp = urlopen(make_url(
         api = "tile", metadata = False,
-        session = utils.SESSION, 
+        session = SESSION, 
         key = KEY,
         panoId = panoId
     ))
