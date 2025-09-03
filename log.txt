@@ -244,6 +244,11 @@ The parcelle table that contains lat and lon only contains 77k of the 425k recor
 -
 Missing: 222 out of 8456 (3%)
 -
+'eval_accuracy': 0.81, 'eval_f1_macro': 0.81, 'eval_f1_beton': 0.79, 'eval_f1_briques': 0.83
+'eval_loss': 0.450 vs 'loss': 0.234
+Positive result. Overfitting considerably. Probably a good solution for that is more data. 
+It took 80 minutes to collect 8k images (100/minute) which resulted in a training dataset of 5k. It took 7 minutes to train.
+55k would take 550 minutes (9h10m) and would result in a training dataset of 33k. It would take 46 minutes to train (on a lab 3 computer)
 
 Object detection
 -

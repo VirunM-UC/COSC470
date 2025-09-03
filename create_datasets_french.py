@@ -21,10 +21,9 @@ def main(image_folder, data_folder, data_fname, included_indices_fname):
         
 
 if __name__ == '__main__':
-    #These 3 should change if using composite
-    image_folder = 'image-folders/french-images/'
-    data_folder = "data-folders/french-data/"
-    included_indices_fname = "included_indices_french.csv"
-
-    data_fname = "french_records.csv"
+    #These 3 should change between paris or french
+    image_folder = 'image-folders/paris-images/'
+    data_folder = "data-folders/paris-data/"
+    included_indices_fname = "included_indices_paris.csv"
+    data_fname = "paris_records.csv"
     main(image_folder, data_folder, data_fname, included_indices_fname)

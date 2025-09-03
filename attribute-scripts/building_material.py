@@ -14,10 +14,10 @@ import numpy as np
 import pandas as pd
 from PIL import Image, ImageDraw
 
-#LABELS = ["beton", "briques", "bois"] 
-LABELS = ["cinder", "brick"] 
-#COLUMN_NAME = "mur" 
-COLUMN_NAME = "building_material"
+LABELS = ["beton", "briques"] #LABELS = ["beton", "briques", "bois"] 
+COLUMN_NAME = "mur" 
+#LABELS = ["cinder", "brick"] 
+#COLUMN_NAME = "building_material"
 LABEL2ID, ID2LABEL = dict(), dict()
 for i, label in enumerate(LABELS):
     LABEL2ID[label] = str(i)
@@ -72,18 +72,18 @@ def df_to_hfds_building_material(df, mode, df_bounding_boxes = None, df_segmasks
         print("train size (original): ", len(df_data))         
     elif mode == "validate":
         print("validate size: ", len(df_data))
-    print(df_data["building_material"].value_counts())
+    print(df_data[COLUMN_NAME].value_counts())
 
     #Upsampling
     if mode == "train":
-        df_data = utils.upsample(df_data, LABELS, "building_material")
+        df_data = utils.upsample(df_data, LABELS, COLUMN_NAME)
         print("train_size (upsampled): ", len(df_data))
-        print(df_data["building_material"].value_counts())
+        print(df_data[COLUMN_NAME].value_counts())
 
     ds = Dataset.from_dict({"image": df_data["image"],
-                             "label": df_data["building_material"]}, 
+                            "label": df_data[COLUMN_NAME]}, 
                              
-                             features = datasets.Features({"image": datasets.Image(),
+                            features = datasets.Features({"image": datasets.Image(),
                                                            "label": datasets.Value(dtype="uint8")}))
     return ds
 
@@ -177,8 +177,8 @@ def main(model_name, data_folder, model_output_dir, bounding_boxes_fname = None,
 
 if __name__ == "__main__":
     model_name = "vit"
-    data_folder = "data-folders/data/"
+    data_folder = "data-folders/paris-data/"
     bounding_boxes_fname = "bounding_boxes.csv"
     segmasks_fname = "semantic_masks.pkl"
-    model_output_dir = f"model-folders/{model_name}-building_material-model"
-    main(model_name, data_folder, model_output_dir, segmasks_fname = segmasks_fname)
+    model_output_dir = f"model-folders/{model_name}-building_material-paris_model"
+    main(model_name, data_folder, model_output_dir)
