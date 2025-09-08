@@ -6,14 +6,26 @@ from sklearn.metrics import ConfusionMatrixDisplay
 import utils
 
 LABELS = {"structure_type": ("attached", "semi-detached", "detached"),
-          "building_conditions": ("very poor", "poor", "fair", "good", "very good")}
+          "building_conditions": ("very poor", "poor", "fair", "good", "very good"),
+          "building_material": ("cinder", "brick")}
 
 
-def main(data_folder, file_path, attribute, model_path):
+def print_metrics(df, attribute):
+    LABEL2ID, ID2LABEL = dict(), dict()
+    for i, label in enumerate(LABELS[attribute]):
+        LABEL2ID[label] = str(i)
+        ID2LABEL[str(i)] = label
+    compute_metrics = utils.default_metric_maker(ID2LABEL)
+
+    predictions = df[f"{attribute}_predict"].map(lambda x: [int(i == int(LABEL2ID[x])) for i in range(len(LABELS[attribute]))]).to_list() #one hot encoding
+    labels = df[f"{attribute}_actual"].map(lambda x: int(LABEL2ID[x])).to_list()
+    scores = compute_metrics((predictions, labels))
+    print(", ".join(f"{key}: {value:.3f}" for key, value in scores.items()))
+
+def main(data_folder, file_path, attribute, model_path, is_french = False):
     df = utils.load_data(data_folder, "validation.pkl")
 
-    df = df[~df[attribute].isna()] #filter NaNs
-
+    df = df[df[attribute].map(lambda x: (x in LABELS[attribute]))] #filter everything that is not in LABELS
 
     classifier = pipeline("image-classification", model = model_path)
 
@@ -22,6 +34,12 @@ def main(data_folder, file_path, attribute, model_path):
     max_scores = map(lambda per_image: max(per_image, key = lambda per_label: per_label['score']), scores) #result is list of dicts, each dict being th predicted label of an image
     attribute_predict = list(map(lambda per_image: per_image['label'], max_scores))
 
+    if is_french:
+        translation = {
+            "beton": "cinder",
+            "briques": "brick"
+        }
+        attribute_predict = list(map(lambda x: translation[x], attribute_predict))
 
     city_name = df.loc[:, "City_Name"]
     images = df.loc[:, "image"]
@@ -40,21 +58,23 @@ def main(data_folder, file_path, attribute, model_path):
 
     utils.df_to_excel(df_attribute, file_path)
 
-    accuracy = sum(df_attribute["correct"]) / len(df_attribute)
-    print(f"{attribute} - Accuracy: {accuracy:.3f}")
+    #evaluate
+    print("global - ", end='')
+    print_metrics(df_attribute, attribute)
     for name in df_attribute["City_Name"].cat.categories:
         city_df = df_attribute.loc[df_attribute["City_Name"] == name]
-        accuracy = sum(city_df["correct"]) / len(city_df)
-        print(name, f"- Accuracy: {accuracy:.3f}")
+        print(f"{name} - ", end='')
+        print_metrics(city_df, attribute)
 
     ConfusionMatrixDisplay.from_predictions(attribute_actual, attribute_predict, labels = LABELS[attribute])
     plt.show()
 
 
 if __name__ == "__main__":
-    attribute = "structure_type"
+    attribute = "building_material"
+    #attribute = "structure_type"
     #attribute = "building_conditions"
     data_folder = "data-folders/data/"
-    model_path = "model-folders/vit-structure_type-model/checkpoint-78"
+    model_path = f"model-folders/vit-building_material-paris_model/checkpoint-258"
     file_path = f"excel-outputs/vit_{attribute}.xlsx"
-    main(data_folder, file_path, attribute, model_path)
+    main(data_folder, file_path, attribute, model_path, is_french = True)

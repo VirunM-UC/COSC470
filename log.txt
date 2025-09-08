@@ -147,7 +147,7 @@ ViT on building_conditions with composite images (not ordinal):
 compare with regular images:
 'eval_accuracy': 0.38, 'eval_f1_0': 0.18 'eval_f1_1': 0.31, 'eval_f1_2': 0.22, 'eval_f1_3': 0.36, 'eval_f1_4': 0.54
 
-Implemented building_material (only cinder annd brick)
+Implemented building_material (only cinder and brick)
 'eval_accuracy': 0.875, 'eval_f1_1': 0.51
 Interesting that it's so poor. Arguably this should be the easiest attribute.
 On composite images it's better:
@@ -249,6 +249,29 @@ Missing: 222 out of 8456 (3%)
 Positive result. Overfitting considerably. Probably a good solution for that is more data. 
 It took 80 minutes to collect 8k images (100/minute) which resulted in a training dataset of 5k. It took 7 minutes to train.
 55k would take 550 minutes (9h10m) and would result in a training dataset of 33k. It would take 46 minutes to train (on a lab 3 computer)
+-
+Inference on global dataset
+global - accuracy: 0.480, f1_macro: 0.409, f1_cinder: 0.614, f1_brick: 0.204
+bangkok - accuracy: 0.700, f1_macro: 0.412, f1_cinder: 0.824, f1_brick: 0.000
+britishcolumbia - accuracy: 0.700, f1_macro: 0.600, f1_cinder: 0.800, f1_brick: 0.400
+copenhagen - accuracy: 0.312, f1_macro: 0.287, f1_cinder: 0.154, f1_brick: 0.421
+dhaka - accuracy: 0.615, f1_macro: 0.381, f1_cinder: 0.762, f1_brick: 0.000
+durban - accuracy: 0.333, f1_macro: 0.250, f1_cinder: 0.500, f1_brick: 0.000
+harriscounty - accuracy: 0.385, f1_macro: 0.350, f1_cinder: 0.200, f1_brick: 0.500
+jakarta - accuracy: 0.357, f1_macro: 0.263, f1_cinder: 0.526, f1_brick: 0.000
+kualalumpur - accuracy: 0.100, f1_macro: 0.091, f1_cinder: 0.182, f1_brick: 0.000
+manila - accuracy: 0.500, f1_macro: 0.333, f1_cinder: 0.667, f1_brick: 0.000
+mocoa - accuracy: 0.500, f1_macro: 0.500, f1_cinder: 0.500, f1_brick: 0.500
+phnompenh - accuracy: 0.429, f1_macro: 0.300, f1_cinder: 0.600, f1_brick: 0.000
+queensland - accuracy: 0.444, f1_macro: 0.308, f1_cinder: 0.615, f1_brick: 0.000
+queretaro - accuracy: 0.273, f1_macro: 0.267, f1_cinder: 0.200, f1_brick: 0.333
+quito - accuracy: 0.516, f1_macro: 0.340, f1_cinder: 0.681, f1_brick: 0.000
+rajshahi - accuracy: 0.818, f1_macro: 0.771, f1_cinder: 0.875, f1_brick: 0.667
+sliven - accuracy: 0.500, f1_macro: 0.495, f1_cinder: 0.444, f1_brick: 0.545
+-
+The fov of the global dataset is still 120. I could change it but then I would have to rerun everything to get relevant comparisons.
+I could also do a second round of training with the global dataset.
+
 
 Object detection
 -
@@ -270,9 +293,7 @@ Working on semantic segmentation.
 Also nothing.
 
 Tests:
-See how well zero shot object detection works on normal images
-See if we can get the equirectangular projection from requesting map tiles API (and if we can change or calculate the heading)
-see how well object detection works on that projection
+see how well object detection works on the equirectangular projection
 
 TODO:
 Document make_url better, modularize it.
