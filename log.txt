@@ -252,6 +252,7 @@ It took 80 minutes to collect 8k images (100/minute) which resulted in a trainin
 -
 Inference on global dataset
 global - accuracy: 0.480, f1_macro: 0.409, f1_cinder: 0.614, f1_brick: 0.204
+
 bangkok - accuracy: 0.700, f1_macro: 0.412, f1_cinder: 0.824, f1_brick: 0.000
 britishcolumbia - accuracy: 0.700, f1_macro: 0.600, f1_cinder: 0.800, f1_brick: 0.400
 copenhagen - accuracy: 0.312, f1_macro: 0.287, f1_cinder: 0.154, f1_brick: 0.421
@@ -270,6 +271,7 @@ rajshahi - accuracy: 0.818, f1_macro: 0.771, f1_cinder: 0.875, f1_brick: 0.667
 sliven - accuracy: 0.500, f1_macro: 0.495, f1_cinder: 0.444, f1_brick: 0.545
 -
 The fov of the global dataset is still 120. I could change it but then I would have to rerun everything to get relevant comparisons.
+All the other results are on fov 120.
 I could also do a second round of training with the global dataset.
 
 
@@ -296,6 +298,6 @@ Tests:
 see how well object detection works on the equirectangular projection
 
 TODO:
-Document make_url better, modularize it.
+Change global images to fov 90 and source = outdoor and retrain everything. Collect results in a table.
 Need to also analyse building condition outputs and landuse outputs.
 Need to implement more attributes.
