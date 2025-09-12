@@ -252,7 +252,7 @@ It took 80 minutes to collect 8k images (100/minute) which resulted in a trainin
 -
 Inference on global dataset
 global - accuracy: 0.480, f1_macro: 0.409, f1_cinder: 0.614, f1_brick: 0.204
-
+/
 bangkok - accuracy: 0.700, f1_macro: 0.412, f1_cinder: 0.824, f1_brick: 0.000
 britishcolumbia - accuracy: 0.700, f1_macro: 0.600, f1_cinder: 0.800, f1_brick: 0.400
 copenhagen - accuracy: 0.312, f1_macro: 0.287, f1_cinder: 0.154, f1_brick: 0.421
@@ -273,6 +273,49 @@ sliven - accuracy: 0.500, f1_macro: 0.495, f1_cinder: 0.444, f1_brick: 0.545
 The fov of the global dataset is still 120. I could change it but then I would have to rerun everything to get relevant comparisons.
 All the other results are on fov 120.
 I could also do a second round of training with the global dataset.
+-
+fov=90 inference - 
+global - accuracy: 0.488, f1_macro: 0.414, f1_cinder: 0.623, f1_brick: 0.205
+/
+harriscounty - accuracy: 0.692, f1_macro: 0.639, f1_cinder: 0.500, f1_brick: 0.778
+copenhagen - accuracy: 0.500, f1_macro: 0.333, f1_cinder: 0.000, f1_brick: 0.667
+mocoa - accuracy: 0.400, f1_macro: 0.400, f1_cinder: 0.400, f1_brick: 0.400
+rajshahi - accuracy: 0.600, f1_macro: 0.524, f1_cinder: 0.714, f1_brick: 0.333
+kualalumpur - accuracy: 0.417, f1_macro: 0.378, f1_cinder: 0.533, f1_brick: 0.222
+britishcolumbia - accuracy: 0.300, f1_macro: 0.231, f1_cinder: 0.462, f1_brick: 0.000
+dhaka - accuracy: 0.357, f1_macro: 0.263, f1_cinder: 0.526, f1_brick: 0.000
+queensland - accuracy: 0.500, f1_macro: 0.333, f1_cinder: 0.667, f1_brick: 0.000
+quito - accuracy: 0.484, f1_macro: 0.326, f1_cinder: 0.652, f1_brick: 0.000
+sliven - accuracy: 0.400, f1_macro: 0.286, f1_cinder: 0.571, f1_brick: 0.000
+- cities with no brick buildings in validation set
+(X) bangkok - accuracy: 0.700, f1_macro: 0.412, f1_cinder: 0.824, f1_brick: 0.000
+(X) durban - accuracy: 0.500, f1_macro: 0.333, f1_cinder: 0.667, f1_brick: 0.000
+(X) jakarta - accuracy: 0.467, f1_macro: 0.318, f1_cinder: 0.636, f1_brick: 0.000
+(X) manila - accuracy: 0.727, f1_macro: 0.421, f1_cinder: 0.842, f1_brick: 0.000
+(X) phnompenh - accuracy: 0.500, f1_macro: 0.333, f1_cinder: 0.667, f1_brick: 0.000
+(X) queretaro - accuracy: 0.273, f1_macro: 0.214, f1_cinder: 0.429, f1_brick: 0.000
+-
+Compare with inference results of model trained on global dataset:
+global - accuracy: 0.919, f1_macro: 0.799, f1_cinder: 0.954, f1_brick: 0.644
+/
+harriscounty - accuracy: 1.000, f1_macro: 1.000, f1_cinder: 1.000, f1_brick: 1.000
+copenhagen - accuracy: 0.571, f1_macro: 0.562, f1_cinder: 0.500, f1_brick: 0.625
+britishcolumbia - accuracy: 0.800, f1_macro: 0.688, f1_cinder: 0.875, f1_brick: 0.500
+queensland - accuracy: 0.600, f1_macro: 0.583, f1_cinder: 0.667, f1_brick: 0.500
+dhaka - accuracy: 0.857, f1_macro: 0.462, f1_cinder: 0.923, f1_brick: 0.000
+kualalumpur - accuracy: 0.833, f1_macro: 0.455, f1_cinder: 0.909, f1_brick: 0.000
+mocoa - accuracy: 0.800, f1_macro: 0.444, f1_cinder: 0.889, f1_brick: 0.000
+quito - accuracy: 0.989, f1_macro: 0.497, f1_cinder: 0.995, f1_brick: 0.000
+rajshahi - accuracy: 0.900, f1_macro: 0.474, f1_cinder: 0.947, f1_brick: 0.000
+sliven - accuracy: 0.900, f1_macro: 0.474, f1_cinder: 0.947, f1_brick: 0.000
+(X) bangkok - accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+(X) durban - accuracy: 0.900, f1_macro: 0.474, f1_cinder: 0.947, f1_brick: 0.000
+(X) jakarta - accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+(X) manila - accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+(X) phnompenh - accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+(X) queretaro - accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+-
+The global model seems to do worse on non-european cities than the paris model.
 
 
 Object detection
@@ -293,6 +336,21 @@ masked is even worse.
 Working on semantic segmentation.
 'eval_f1_macro': 0.45, 'eval_f1_cinder': 0.91, 'eval_f1_brick': 0.0
 Also nothing.
+
+I am testing whether the default fov would do better for building_material.
+I have collected the dataset. Randomly, the validation set has 13% brick compared to 19% in the full dataset. 
+I could stratify based on material but I am already stratifying based on city.
+
+Everything attempted on building_material (cinder and brick) on global dataset:
+fov=120                                                         fov=90
+ViT - 'eval_f1_1': 0.51                                         'eval_f1_brick': 0.64
+ViT and composite images - 'eval_f1_1': 0.62
+ViT and multi pano images - 'eval_f1_1': 0.62
+ViT and bounding boxes (cropped) - 'eval_f1_brick': 0.20
+ViT and bounding boxes (masked) - 'eval_f1_brick': 0.0
+ViT and semantic segmentation - 'eval_f1_brick': 0.0
+ViT and trained on paris data - f1_brick: 0.204
+
 
 Tests:
 see how well object detection works on the equirectangular projection

@@ -1,14 +1,16 @@
 from urllib.request import urlopen
+from urllib.error import URLError
 import cv2
 import numpy as np
 import pandas as pd
 
+from utils import make_url
 from utils import KEY
 
 def get_image(point_x, point_y):
     url = make_url(location = f"{point_y},{point_x}", 
                 size = "400x400",
-                fov = str(120), 
+                fov = str(90), 
                 return_error_code = "true",
                 source = "outdoor",
                 key = KEY)
@@ -28,7 +30,7 @@ def main(image_folder, excel_fname, image_mask_fname ):
         try:
             image = get_image(df.loc[i, "POINT_X"], df.loc[i, "POINT_Y"])
             save_image(image, image_folder, i)
-        except:
+        except URLError:
             image = np.zeros((400,400,3))
             save_image(image, image_folder, i)
 
@@ -41,13 +43,8 @@ def main(image_folder, excel_fname, image_mask_fname ):
         
 
 if __name__ == '__main__':
-    image_folder = 'image-folders/images/'
+    image_folder = 'image-folders/fov90-images/'
     excel_fname = "UrbFloodVul_Overall_StudyArea_Points.xlsx"
-    image_mask_fname = "lost_images_mask.csv"
+    image_mask_fname = "lost_images_mask_fov90.csv"
     main(image_folder, excel_fname, image_mask_fname )
 
-#resp = urlopen('https://upload.wikimedia.org/wikipedia/commons/3/3e/Emperor_Penguins_(15885611526).jpg')
-#resp = urlopen("https://maps.googleapis.com/maps/api/streetview?size=650x300&location=13.78848431,100.6040305&key=")
-#image = np.asarray(bytearray(resp.read()), dtype='uint8')
-#image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-#image = cv2.resize(image, (int(image.shape[1]/5), int(image.shape[0]/5)))

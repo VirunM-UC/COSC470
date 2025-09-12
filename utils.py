@@ -149,10 +149,11 @@ def default_metric_maker(id2label):
     f1 = evaluate.load("f1")
     def compute_metrics(eval_pred):
         predictions, labels = eval_pred
+        num_labels = len(predictions[0])
         predictions = np.argmax(predictions, axis=1)
         acc_result = accuracy.compute(predictions=predictions, references=labels)
 
-        f = f1.compute(predictions=predictions, references=labels, average=None)    
+        f = f1.compute(predictions=predictions, references=labels, average=None, labels = list(range(num_labels)))   #labels is for making sure all F1 scores are included
         f_result = dict()
         f_result["f1_macro"] = sum(f["f1"]) / len(f["f1"])
         for index, value in enumerate(f["f1"]):

@@ -41,9 +41,9 @@ def main(image_folder, data_folder, excel_fname, image_mask_fname):
 
 if __name__ == '__main__':
     #These 3 should change if using composite
-    image_folder = 'image-folders/images/'
-    data_folder = "data-folders/data/"
-    image_mask_fname = "lost_images_mask.csv"
+    image_folder = 'image-folders/fov90-images/'
+    data_folder = "data-folders/fov90-data/"
+    image_mask_fname = "lost_images_mask_fov90.csv"
 
     excel_fname = "UrbFloodVul_Overall_StudyArea_Points.xlsx"
     main(image_folder, data_folder, excel_fname, image_mask_fname)

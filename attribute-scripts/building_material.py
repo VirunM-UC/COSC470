@@ -14,10 +14,10 @@ import numpy as np
 import pandas as pd
 from PIL import Image, ImageDraw
 
-LABELS = ["beton", "briques"] #LABELS = ["beton", "briques", "bois"] 
-COLUMN_NAME = "mur" 
-#LABELS = ["cinder", "brick"] 
-#COLUMN_NAME = "building_material"
+#LABELS = ["beton", "briques"] #LABELS = ["beton", "briques", "bois"] 
+#COLUMN_NAME = "mur" 
+LABELS = ["cinder", "brick"] 
+COLUMN_NAME = "building_material"
 LABEL2ID, ID2LABEL = dict(), dict()
 for i, label in enumerate(LABELS):
     LABEL2ID[label] = str(i)
@@ -177,8 +177,8 @@ def main(model_name, data_folder, model_output_dir, bounding_boxes_fname = None,
 
 if __name__ == "__main__":
     model_name = "vit"
-    data_folder = "data-folders/paris-data/"
+    data_folder = "data-folders/fov90-data/"
     bounding_boxes_fname = "bounding_boxes.csv"
     segmasks_fname = "semantic_masks.pkl"
-    model_output_dir = f"model-folders/{model_name}-building_material-paris_model"
+    model_output_dir = f"model-folders/{model_name}-building_material-model"
     main(model_name, data_folder, model_output_dir)
