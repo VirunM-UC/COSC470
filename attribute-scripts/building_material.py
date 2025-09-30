@@ -14,14 +14,7 @@ import numpy as np
 import pandas as pd
 from PIL import Image, ImageDraw
 
-#LABELS = ["beton", "briques"] #LABELS = ["beton", "briques", "bois"] 
-#COLUMN_NAME = "mur" 
-LABELS = ["cinder", "brick"] 
-COLUMN_NAME = "building_material"
-LABEL2ID, ID2LABEL = dict(), dict()
-for i, label in enumerate(LABELS):
-    LABEL2ID[label] = str(i)
-    ID2LABEL[str(i)] = label
+
 
 #semantic preprocessing functions for use in df_to_hfds_building_material
 def crop_fn(row):
@@ -60,7 +53,7 @@ def df_to_hfds_building_material(df, mode, df_bounding_boxes = None, df_segmasks
         #cropping/masking bounding boxes
         df_data = df_data.join(df_bounding_boxes, how="inner")
         df_data = df_data[~pd.isna(df_data.iloc[:,2])] #filter out NA values (ones with no bounding box)
-        df_data = df_data.apply(mask_fn, axis="columns", result_type="broadcast")
+        df_data = df_data.apply(crop_fn, axis="columns", result_type="broadcast")
         df_data = df_data.loc[:, ["image", COLUMN_NAME]]
     elif df_segmasks is not None:
         df_data = df_data.join(df_segmasks, how="inner")
@@ -176,9 +169,21 @@ def main(model_name, data_folder, model_output_dir, bounding_boxes_fname = None,
     trainer.train()
 
 if __name__ == "__main__":
+    #LABELS = ["beton", "briques"] #LABELS = ["beton", "briques", "bois"] 
+    #COLUMN_NAME = "mur" 
+    LABELS = ["cinder", "brick"] 
+    COLUMN_NAME = "building_material"
+    #LABELS = ["attached", "semi-detached", "detached"] 
+    #COLUMN_NAME = "structure_type"
+    LABEL2ID, ID2LABEL = dict(), dict()
+    for i, label in enumerate(LABELS):
+        LABEL2ID[label] = str(i)
+        ID2LABEL[str(i)] = label
+    
+    
     model_name = "vit"
-    data_folder = "data-folders/fov90-data/"
-    bounding_boxes_fname = "bounding_boxes.csv"
-    segmasks_fname = "semantic_masks.pkl"
-    model_output_dir = f"model-folders/{model_name}-building_material-model"
+    data_folder = "data-folders/hybrid-data/"
+    #bounding_boxes_fname = "bounding_boxes.csv"
+    #segmasks_fname = "semantic_masks.pkl"
+    model_output_dir = f"model-folders/{model_name}-building_material-hybrid_model"
     main(model_name, data_folder, model_output_dir)

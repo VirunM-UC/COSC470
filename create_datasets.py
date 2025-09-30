@@ -32,8 +32,11 @@ def main(image_folder, data_folder, excel_fname, image_mask_fname):
     df = read_excel(excel_fname)
     df["image"] = load_images(image_folder, len(df))
     df = clear_lost_images(df, image_mask_fname)
-    not_test_df, test_df  = train_test_split(df, test_size = 0.2, random_state = RANDOM_STATE, stratify = df["City_Name"])
-    train_df, val_df = train_test_split(not_test_df, test_size = 0.25, random_state = RANDOM_STATE, stratify = not_test_df["City_Name"])
+    
+    df = df[df["building_material"].map(lambda x: (x in ["cinder", "brick"]))]
+    not_test_df, test_df  = train_test_split(df, test_size = 0.2, random_state = RANDOM_STATE, stratify = list(zip(df["City_Name"], df["building_material"])))
+    train_df, val_df = train_test_split(not_test_df, test_size = 0.25, random_state = RANDOM_STATE, stratify = list(zip(not_test_df["City_Name"], not_test_df["building_material"])))
+    
     train_df.to_pickle(data_folder + "training.pkl")
     val_df.to_pickle(data_folder + "validation.pkl")
     test_df.to_pickle(data_folder + "testing.pkl")
@@ -42,7 +45,7 @@ def main(image_folder, data_folder, excel_fname, image_mask_fname):
 if __name__ == '__main__':
     #These 3 should change if using composite
     image_folder = 'image-folders/fov90-images/'
-    data_folder = "data-folders/fov90-data/"
+    data_folder = "data-folders/fov90_material-data/"
     image_mask_fname = "lost_images_mask_fov90.csv"
 
     excel_fname = "UrbFloodVul_Overall_StudyArea_Points.xlsx"

@@ -5,6 +5,9 @@ from transformers import DefaultDataCollator
 import evaluate
 from transformers import AutoModelForImageClassification, TrainingArguments, Trainer
 
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import utils
 
 import numpy as np
@@ -127,7 +130,7 @@ def main(model_name, data_folder, model_output_dir):
     trainer.train()
 
 if __name__ == "__main__":
-    model_name = "vit"
-    data_folder = "data-folders/data/"
+    model_name = "convnext"
+    data_folder = "data-folders/fov90-data/"
     model_output_dir = f"model-folders/{model_name}-structure_type-model"
     main(model_name, data_folder, model_output_dir)

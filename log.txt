@@ -277,16 +277,16 @@ I could also do a second round of training with the global dataset.
 fov=90 inference - 
 global - accuracy: 0.488, f1_macro: 0.414, f1_cinder: 0.623, f1_brick: 0.205
 /
-harriscounty - accuracy: 0.692, f1_macro: 0.639, f1_cinder: 0.500, f1_brick: 0.778
-copenhagen - accuracy: 0.500, f1_macro: 0.333, f1_cinder: 0.000, f1_brick: 0.667
-mocoa - accuracy: 0.400, f1_macro: 0.400, f1_cinder: 0.400, f1_brick: 0.400
-rajshahi - accuracy: 0.600, f1_macro: 0.524, f1_cinder: 0.714, f1_brick: 0.333
-kualalumpur - accuracy: 0.417, f1_macro: 0.378, f1_cinder: 0.533, f1_brick: 0.222
-britishcolumbia - accuracy: 0.300, f1_macro: 0.231, f1_cinder: 0.462, f1_brick: 0.000
-dhaka - accuracy: 0.357, f1_macro: 0.263, f1_cinder: 0.526, f1_brick: 0.000
-queensland - accuracy: 0.500, f1_macro: 0.333, f1_cinder: 0.667, f1_brick: 0.000
-quito - accuracy: 0.484, f1_macro: 0.326, f1_cinder: 0.652, f1_brick: 0.000
-sliven - accuracy: 0.400, f1_macro: 0.286, f1_cinder: 0.571, f1_brick: 0.000
+NA harriscounty - accuracy: 0.692, f1_macro: 0.639, f1_cinder: 0.500, f1_brick: 0.778
+E  copenhagen - accuracy: 0.500, f1_macro: 0.333, f1_cinder: 0.000, f1_brick: 0.667
+SA mocoa - accuracy: 0.400, f1_macro: 0.400, f1_cinder: 0.400, f1_brick: 0.400
+A  rajshahi - accuracy: 0.600, f1_macro: 0.524, f1_cinder: 0.714, f1_brick: 0.333
+A  kualalumpur - accuracy: 0.417, f1_macro: 0.378, f1_cinder: 0.533, f1_brick: 0.222
+NA britishcolumbia - accuracy: 0.300, f1_macro: 0.231, f1_cinder: 0.462, f1_brick: 0.000
+A  dhaka - accuracy: 0.357, f1_macro: 0.263, f1_cinder: 0.526, f1_brick: 0.000
+AU queensland - accuracy: 0.500, f1_macro: 0.333, f1_cinder: 0.667, f1_brick: 0.000
+SA quito - accuracy: 0.484, f1_macro: 0.326, f1_cinder: 0.652, f1_brick: 0.000
+E  sliven - accuracy: 0.400, f1_macro: 0.286, f1_cinder: 0.571, f1_brick: 0.000
 - cities with no brick buildings in validation set
 (X) bangkok - accuracy: 0.700, f1_macro: 0.412, f1_cinder: 0.824, f1_brick: 0.000
 (X) durban - accuracy: 0.500, f1_macro: 0.333, f1_cinder: 0.667, f1_brick: 0.000
@@ -341,9 +341,22 @@ I am testing whether the default fov would do better for building_material.
 I have collected the dataset. Randomly, the validation set has 13% brick compared to 19% in the full dataset. 
 I could stratify based on material but I am already stratifying based on city.
 
+Everything attempted on structure_type on global dataset:
+fov=120 (macro is of two classes)                               fov=90
+ViT - macro_f1: 0.23                                            'eval_f1_attached': 0.59, 'eval_f1_semi-detached': 0.0, macro_f1: 0.29
+SwinV2 - macro_f1: 0.27                                         'eval_f1_attached': 0.4, 'eval_f1_semi-detached': 0.14, macro_f1: 0.27
+ConvNeXT - macro_f1: 0.24                                       'eval_f1_attached': 0.56, 'eval_f1_semi-detached': 0.07, macro_f1: 0.31
+ViT on composite images - macro_f1: 0.27
+ViT on multi pano images - macro_f1: 0.29
+ViT and bounding boxes (cropped) - 'eval_f1_attached': 0.42, 'eval_f1_semi-detached': 0.0, macro_f1: 0.21
+ViT and semantic segmentation - 'eval_f1_attached': 0.34, 'eval_f1_semi-detached': 0.0, macro_f1: 0.17
+
+
 Everything attempted on building_material (cinder and brick) on global dataset:
 fov=120                                                         fov=90
 ViT - 'eval_f1_1': 0.51                                         'eval_f1_brick': 0.64
+SwinV2 - 'eval_f1_brick': 0.48                                  'eval_f1_brick': 0.61
+ConvNeXT - 'eval_f1_brick': 0.55                                'eval_f1_brick': 0.51
 ViT and composite images - 'eval_f1_1': 0.62
 ViT and multi pano images - 'eval_f1_1': 0.62
 ViT and bounding boxes (cropped) - 'eval_f1_brick': 0.20
@@ -351,6 +364,54 @@ ViT and bounding boxes (masked) - 'eval_f1_brick': 0.0
 ViT and semantic segmentation - 'eval_f1_brick': 0.0
 ViT and trained on paris data - f1_brick: 0.204
 
+Multiple angles get put in one image while multiple viewpoints get multiple images.
+The reasoning was that multiple angles won't be pointing at the building so you stitch them together.
+Multiple viewpoints are all pointing at the same building so they can stand on their own as individual data points.
+
+
+fov=90 inference on global dataset using paris model, correctly stratified:
+global - accuracy: 0.541, f1_macro: 0.465, f1_cinder: 0.667, f1_brick: 0.263
+/
+E  copenhagen - accuracy: 0.667, f1_macro: 0.534, f1_cinder: 0.286, f1_brick: 0.783
+Au queensland - accuracy: 0.700, f1_macro: 0.697, f1_cinder: 0.727, f1_brick: 0.667
+NA britishcolumbia - accuracy: 0.727, f1_macro: 0.686, f1_cinder: 0.800, f1_brick: 0.571
+NA harriscounty - accuracy: 0.308, f1_macro: 0.291, f1_cinder: 0.182, f1_brick: 0.400
+E  sliven - accuracy: 0.400, f1_macro: 0.375, f1_cinder: 0.500, f1_brick: 0.250
+SA quito - accuracy: 0.570, f1_macro: 0.422, f1_cinder: 0.714, f1_brick: 0.130
+A  dhaka - accuracy: 0.462, f1_macro: 0.316, f1_cinder: 0.632, f1_brick: 0.000
+A  phnompenh - accuracy: 0.556, f1_macro: 0.357, f1_cinder: 0.714, f1_brick: 0.000
+SA queretaro - accuracy: 0.250, f1_macro: 0.200, f1_cinder: 0.400, f1_brick: 0.000
+A  rajshahi - accuracy: 0.545, f1_macro: 0.353, f1_cinder: 0.706, f1_brick: 0.000
+(X) bangkok - accuracy: 0.900, f1_macro: 0.474, f1_cinder: 0.947, f1_brick: 0.000
+(X) durban - accuracy: 0.333, f1_macro: 0.250, f1_cinder: 0.500, f1_brick: 0.000
+(X) jakarta - accuracy: 0.385, f1_macro: 0.278, f1_cinder: 0.556, f1_brick: 0.000
+(X) kualalumpur - accuracy: 0.455, f1_macro: 0.312, f1_cinder: 0.625, f1_brick: 0.000
+(X) manila - accuracy: 0.692, f1_macro: 0.409, f1_cinder: 0.818, f1_brick: 0.000
+(X) mocoa - accuracy: 0.500, f1_macro: 0.333, f1_cinder: 0.667, f1_brick: 0.000
+Au: 0.66, E: 0.51, NA: 0.48, SA: 0.41, A: 0.00
+-
+Compare with inference results of model trained on global dataset:
+global - accuracy: 0.895, f1_macro: 0.774, f1_cinder: 0.939, f1_brick: 0.609
+/
+NA harriscounty - accuracy: 0.846, f1_macro: 0.705, f1_cinder: 0.500, f1_brick: 0.909
+E  copenhagen - accuracy: 0.733, f1_macro: 0.722, f1_cinder: 0.667, f1_brick: 0.778
+NA britishcolumbia - accuracy: 0.636, f1_macro: 0.607, f1_cinder: 0.714, f1_brick: 0.500
+Au queensland - accuracy: 0.500, f1_macro: 0.495, f1_cinder: 0.545, f1_brick: 0.444
+A  dhaka - accuracy: 0.923, f1_macro: 0.480, f1_cinder: 0.960, f1_brick: 0.000
+A  phnompenh - accuracy: 0.889, f1_macro: 0.471, f1_cinder: 0.941, f1_brick: 0.000
+SA queretaro - accuracy: 0.917, f1_macro: 0.478, f1_cinder: 0.957, f1_brick: 0.000
+SA quito - accuracy: 0.946, f1_macro: 0.486, f1_cinder: 0.972, f1_brick: 0.000
+A  rajshahi - accuracy: 0.818, f1_macro: 0.450, f1_cinder: 0.900, f1_brick: 0.000
+E  sliven - accuracy: 0.900, f1_macro: 0.474, f1_cinder: 0.947, f1_brick: 0.000
+(X) bangkok - accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+(X) durban - accuracy: 0.889, f1_macro: 0.471, f1_cinder: 0.941, f1_brick: 0.000
+(X) jakarta - accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+(X) kualalumpur - accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+(X) manila - accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+(X) mocoa - accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+NA: 0.70, Au: 0.44, E: 0.38, SA: 0.00, A: 0.00
+
+Created a combined dataset of paris and global images.
 
 Tests:
 see how well object detection works on the equirectangular projection
