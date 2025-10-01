@@ -12,4 +12,9 @@ df_paris["building_material"] = df_paris["building_material"].map(lambda x: tran
 df_paris.insert(0, "City_Name", ["paris" for _ in range(len(df_paris))]) 
 df_paris = df_paris.loc[:, ["City_Name", "POINT_X", "POINT_Y", "building_material", "image"]]
 df = pd.concat([df_global, df_paris], ignore_index = True)
+
+#upsample
+df.insert(0, "upsample", (df["City_Name"] == "paris"))
+df = utils.upsample(df, [False, True], "upsample")
+
 df.to_pickle("data-folders/hybrid-data/validation.pkl")

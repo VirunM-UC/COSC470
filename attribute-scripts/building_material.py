@@ -147,7 +147,7 @@ def main(model_name, data_folder, model_output_dir, bounding_boxes_fname = None,
         per_device_train_batch_size=16,
         gradient_accumulation_steps=4,
         per_device_eval_batch_size=16,
-        num_train_epochs=3,
+        num_train_epochs=5,
         warmup_ratio=0.1,
         logging_steps=10,
         load_best_model_at_end=True,
@@ -182,8 +182,8 @@ if __name__ == "__main__":
     
     
     model_name = "vit"
-    data_folder = "data-folders/hybrid-data/"
+    data_folder = "data-folders/fov90_double-data/"
     #bounding_boxes_fname = "bounding_boxes.csv"
     #segmasks_fname = "semantic_masks.pkl"
-    model_output_dir = f"model-folders/{model_name}-building_material-hybrid_model"
+    model_output_dir = f"model-folders/{model_name}-building_material-double_model"
     main(model_name, data_folder, model_output_dir)

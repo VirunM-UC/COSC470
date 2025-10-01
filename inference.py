@@ -74,7 +74,7 @@ if __name__ == "__main__":
     attribute = "building_material"
     #attribute = "structure_type"
     #attribute = "building_conditions"
-    data_folder = "data-folders/fov90_material-data/"
+    data_folder = "data-folders/paris-data/"
     model_path = f"model-folders/vit-building_material-model/checkpoint-63"
     file_path = f"excel-outputs/vit_{attribute}.xlsx"
     main(data_folder, file_path, attribute, model_path, is_french = False)

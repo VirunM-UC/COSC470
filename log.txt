@@ -388,7 +388,10 @@ A  rajshahi - accuracy: 0.545, f1_macro: 0.353, f1_cinder: 0.706, f1_brick: 0.00
 (X) kualalumpur - accuracy: 0.455, f1_macro: 0.312, f1_cinder: 0.625, f1_brick: 0.000
 (X) manila - accuracy: 0.692, f1_macro: 0.409, f1_cinder: 0.818, f1_brick: 0.000
 (X) mocoa - accuracy: 0.500, f1_macro: 0.333, f1_cinder: 0.667, f1_brick: 0.000
-Au: 0.66, E: 0.51, NA: 0.48, SA: 0.41, A: 0.00
+Au: 0.66,  E: 0.51, NA: 0.48, SA: 0.41,  A: 0.00 (based on f1_brick)
+Au: 0.66, SA: 0.41, NA: 0.37,  E: 0.26,  A: 0.00 (based on lowest f1)
+Au: 0.69, NA: 0.48,  E: 0.45,  A: 0.34, SA: 0.31 (based on f1_macro)
+
 -
 Compare with inference results of model trained on global dataset:
 global - accuracy: 0.895, f1_macro: 0.774, f1_cinder: 0.939, f1_brick: 0.609
@@ -409,9 +412,13 @@ E  sliven - accuracy: 0.900, f1_macro: 0.474, f1_cinder: 0.947, f1_brick: 0.000
 (X) kualalumpur - accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
 (X) manila - accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
 (X) mocoa - accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
-NA: 0.70, Au: 0.44, E: 0.38, SA: 0.00, A: 0.00
+NA: 0.70, Au: 0.44,  E: 0.38, SA: 0.00, A: 0.00 (based on f1_brick)
+NA: 0.50, Au: 0.44,  E: 0.33, SA: 0.00, A: 0.00 (based on lowest f1)
+NA: 0.65,  E: 0.59, Au: 0.49, SA: 0.48, A: 0.46 (based on f1_macro)
 
-Created a combined dataset of paris and global images.
+Created a combined dataset of paris and global images. For now I just added them together.
+Result on hybrid validation: 'eval_f1_brick': 0.82
+Result on global dataset: f1_brick: 0.623 (slight improvement from 0.60)
 
 Tests:
 see how well object detection works on the equirectangular projection

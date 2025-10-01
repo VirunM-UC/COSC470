@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import json
 
+import utils
 from utils import make_url
 from utils import KEY, SESSION
 
@@ -12,7 +13,7 @@ def get_double_images(point_x, point_y):
     #get first image
     resp = urlopen(make_url(location = f"{point_y},{point_x}", 
                        size = "400x400",
-                       fov = str(120), 
+                       fov = str(90), 
                        return_error_code = "true",
                        source = "outdoor",
                        key = KEY))
@@ -29,34 +30,38 @@ def get_double_images(point_x, point_y):
     resp = urlopen(metadata_url)
     metadata_json = json.loads(resp.read())
 
-    panoramas = metadata_json["links"]
-    #collect distances of linked panoramas from building
-    build_location = {"lat": float(point_y), "lng": float(point_x)}
-    for pan in panoramas:
-        resp = urlopen(make_url(api = "static", metadata = True, pano = pan["panoId"], key = KEY))
-        pan_json = json.loads(resp.read())
-        pan["location"] = pan_json["location"]
-        pan["distance"] = utils.distance(build_location, pan_json["location"])
+    try:
+        panoramas = metadata_json["links"]
 
-    #decision to include extra image or not
-    if len(panoramas) > 0:
-        closest = min(panoramas, key = lambda x: x["distance"])
-        if closest["distance"] < 50:
-            heading = utils.heading(build_location, closest["location"])
-            try:
-                resp = urlopen(make_url(pano = closest["panoId"], 
-                       size = "400x400",
-                       fov = str(120), 
-                       return_error_code = "true",
-                       source = "outdoor",
-                       heading = str(heading),
-                       key = KEY))
-            except URLError:
-                pass
-            else:
-                image2 = np.asarray(bytearray(resp.read()), dtype='uint8')
-                image2 = cv2.imdecode(image2, cv2.IMREAD_COLOR)
-                return (image, image2)
+        #collect distances of linked panoramas from building
+        build_location = {"lat": float(point_y), "lng": float(point_x)}
+        for pan in panoramas:
+            resp = urlopen(make_url(api = "static", metadata = True, pano = pan["panoId"], key = KEY))
+            pan_json = json.loads(resp.read())
+            pan["location"] = pan_json["location"]
+            pan["distance"] = utils.distance(build_location, pan_json["location"])
+
+        #decision to include extra image or not
+        if len(panoramas) > 0:
+            closest = min(panoramas, key = lambda x: x["distance"])
+            if closest["distance"] < 50:
+                heading = utils.heading(build_location, closest["location"])
+                try:
+                    resp = urlopen(make_url(pano = closest["panoId"], 
+                        size = "400x400",
+                        fov = str(90), 
+                        return_error_code = "true",
+                        source = "outdoor",
+                        heading = str(heading),
+                        key = KEY))
+                except URLError:
+                    pass
+                else:
+                    image2 = np.asarray(bytearray(resp.read()), dtype='uint8')
+                    image2 = cv2.imdecode(image2, cv2.IMREAD_COLOR)
+                    return (image, image2)
+    except:
+        return (image,)
 
     return (image,)
 
@@ -68,12 +73,12 @@ def main(image_folder, excel_fname, image_mask_fname ):
     missing = []
     df = pd.read_excel(excel_fname)
     data_mask = pd.Series([True for _ in range(len(df))], dtype="boolean")
-    for i in range(len(df)):
+    for i in range(102, len(df)):
         try:
             images = get_double_images(df.loc[i, "POINT_X"], df.loc[i, "POINT_Y"])
             for j in range(len(images)):
                 save_image(images[j], image_folder, i, j)
-        except:
+        except URLError:
             image = np.zeros((400,400,3))
             save_image(image, image_folder, i, 0)
 
@@ -86,7 +91,7 @@ def main(image_folder, excel_fname, image_mask_fname ):
    
 
 if __name__ == '__main__':
-    image_folder = 'image-folders/double-images/'
+    image_folder = 'image-folders/fov90_double-images/'
     excel_fname = "UrbFloodVul_Overall_StudyArea_Points.xlsx"
-    image_mask_fname = "lost_images_mask_double.csv"
+    image_mask_fname = "lost_images_mask_fov90_double.csv"
     main(image_folder, excel_fname, image_mask_fname)
