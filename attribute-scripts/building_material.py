@@ -44,11 +44,12 @@ def df_to_hfds_building_material(df, mode, df_bounding_boxes = None, df_segmasks
     df: dataframe
     mode: string, either "train" or "validate"
     """
+    #df = df[df["City_Name"].map(lambda x: (x in CITIES))] #filter everything that is not in CITIES
 
     df_data = df.loc[:, ["image", COLUMN_NAME]]
     df_data = df_data[df_data[COLUMN_NAME].map(lambda x: (x in LABELS))] #filter everything that is not in LABELS
     df_data[COLUMN_NAME] = df_data[COLUMN_NAME].map(lambda x: int(LABEL2ID[x])).astype("uint8")
-    
+
     if df_bounding_boxes is not None:
         #cropping/masking bounding boxes
         df_data = df_data.join(df_bounding_boxes, how="inner")
@@ -179,7 +180,7 @@ if __name__ == "__main__":
     for i, label in enumerate(LABELS):
         LABEL2ID[label] = str(i)
         ID2LABEL[str(i)] = label
-    
+    #CITIES = []
     
     model_name = "vit"
     data_folder = "data-folders/hybrid-data/"
