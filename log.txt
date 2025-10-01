@@ -353,12 +353,12 @@ ViT and semantic segmentation - 'eval_f1_attached': 0.34, 'eval_f1_semi-detached
 
 
 Everything attempted on building_material (cinder and brick) on global dataset:
-fov=120                                                         fov=90
+fov=120                                                         fov=90                  fov90 (correct stratification)
 ViT - 'eval_f1_1': 0.51                                         'eval_f1_brick': 0.64
 SwinV2 - 'eval_f1_brick': 0.48                                  'eval_f1_brick': 0.61
 ConvNeXT - 'eval_f1_brick': 0.55                                'eval_f1_brick': 0.51
 ViT and composite images - 'eval_f1_1': 0.62
-ViT and multi pano images - 'eval_f1_1': 0.62
+ViT and multi pano images - 'eval_f1_1': 0.62                                           'eval_f1_brick': 0.65
 ViT and bounding boxes (cropped) - 'eval_f1_brick': 0.20
 ViT and bounding boxes (masked) - 'eval_f1_brick': 0.0
 ViT and semantic segmentation - 'eval_f1_brick': 0.0
