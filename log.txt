@@ -416,6 +416,15 @@ E  sliven -             accuracy: 0.900, f1_macro: 0.474, f1_cinder: 0.947, f1_b
 NA: 0.70, Au: 0.44,  E: 0.38, SA: 0.00, A: 0.00 (based on f1_brick)
 NA: 0.50, Au: 0.44,  E: 0.33, SA: 0.00, A: 0.00 (based on lowest f1)
 NA: 0.65,  E: 0.59, Au: 0.49, SA: 0.48, A: 0.46 (based on f1_macro)
+-
+By region inference (rather than by city)
+europe -        accuracy: 0.800, f1_macro: 0.788, f1_cinder: 0.839, f1_brick: 0.737
+north america - accuracy: 0.750, f1_macro: 0.733, f1_cinder: 0.667, f1_brick: 0.800
+south america - accuracy: 0.945, f1_macro: 0.486, f1_cinder: 0.972, f1_brick: 0.000
+australia -     accuracy: 0.500, f1_macro: 0.495, f1_cinder: 0.545, f1_brick: 0.444
+asia -          accuracy: 0.950, f1_macro: 0.487, f1_cinder: 0.974, f1_brick: 0.000
+africa -        accuracy: 0.889, f1_macro: 0.471, f1_cinder: 0.941, f1_brick: 0.000
+
 
 Created a combined dataset of paris and global images. For now I just added them together.
 Result on hybrid validation: 'eval_f1_brick': 0.82
@@ -453,6 +462,9 @@ North America:  'eval_accuracy': 0.65, 'eval_f1_macro': 0.54, 'eval_f1_cinder': 
 South America:  'eval_accuracy': 0.98, 'eval_f1_macro': 0.49, 'eval_f1_cinder': 0.99, 'eval_f1_brick': 0.0
 Asia:           'eval_accuracy': 0.95, 'eval_f1_macro': 0.65, 'eval_f1_cinder': 0.97, 'eval_f1_brick': 0.33
 Australia:      'eval_accuracy': 0.70, 'eval_f1_macro': 0.60, 'eval_f1_cinder': 0.80, 'eval_f1_brick': 0.40
+Compare with by global model inference: 
+E: 0.78, NA: 0.73, Au: 0.49, A: 0.48, SA: 0.48 
+
 
 Tests:
 see how well object detection works on the equirectangular projection

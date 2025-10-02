@@ -66,15 +66,30 @@ def main(data_folder, file_path, attribute, model_path, is_french = False):
         print(f"{name} - ", end='')
         print_metrics(city_df, attribute)
 
+    for region, cities in REGIONS.items():
+        region_df = df_attribute.loc[df_attribute["City_Name"].map(lambda x: (x in cities))]
+        print(f"{region} - ", end='')
+        print_metrics(region_df, attribute)
+
     ConfusionMatrixDisplay.from_predictions(attribute_actual, attribute_predict, labels = LABELS[attribute])
     plt.show()
 
 
 if __name__ == "__main__":
+    REGIONS = {
+        "europe": ["copenhagen", "sliven"],
+        "north america": ["harriscounty", "britishcolumbia"],
+        "south america": ["queretaro", "quito", "mocoa"],
+        "australia": ["queensland"],
+        "asia": ["dhaka", "phnompenh", "rajshahi", "bangkok", "jakarta", "kualalumpur", "manila"],
+        "africa": ["durban"]
+    }
+    
     attribute = "building_material"
     #attribute = "structure_type"
     #attribute = "building_conditions"
     data_folder = "data-folders/fov90_material-data/" #fov90_material-data is the stratified global dataset for material
-    model_path = f"model-folders/vit-building_material-hybrid_model/checkpoint-546"
+    model_path = f"model-folders/vit-building_material-model/checkpoint-63"
     file_path = f"excel-outputs/vit_{attribute}.xlsx"
+    
     main(data_folder, file_path, attribute, model_path, is_french = False)
