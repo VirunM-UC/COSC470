@@ -182,7 +182,7 @@ if __name__ == "__main__":
         ID2LABEL[str(i)] = label
     #CITIES = []
     
-    model_name = "swinv2"
+    model_name = "convnext"
     data_folder = "data-folders/material-data/"
     #bounding_boxes_fname = "bounding_boxes.csv"
     #segmasks_fname = "semantic_masks.pkl"

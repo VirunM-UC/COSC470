@@ -88,8 +88,8 @@ if __name__ == "__main__":
     attribute = "building_material"
     #attribute = "structure_type"
     #attribute = "building_conditions"
-    data_folder = "data-folders/data/" #material-data is the stratified global dataset for material
-    model_path = f"model-folders/vit-building_material-hybrid_model/checkpoint-597"
+    data_folder = "data-folders/material-data/" #material-data is the stratified global dataset for material
+    model_path = f"model-folders/vit-building_material-hybrid0_model/checkpoint-546"
     file_path = f"excel-outputs/vit_{attribute}.xlsx"
     
     main(data_folder, file_path, attribute, model_path, is_french = False)
