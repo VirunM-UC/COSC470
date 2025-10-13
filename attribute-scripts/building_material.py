@@ -182,9 +182,9 @@ if __name__ == "__main__":
         ID2LABEL[str(i)] = label
     #CITIES = []
     
-    model_name = "vit"
-    data_folder = "data-folders/hybrid-data/"
+    model_name = "swinv2"
+    data_folder = "data-folders/material-data/"
     #bounding_boxes_fname = "bounding_boxes.csv"
     #segmasks_fname = "semantic_masks.pkl"
-    model_output_dir = f"model-folders/{model_name}-building_material-hybrid_model"
+    model_output_dir = f"model-folders/{model_name}-building_material-model"
     main(model_name, data_folder, model_output_dir)

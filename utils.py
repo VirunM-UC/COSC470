@@ -4,6 +4,8 @@ from io import BytesIO
 
 import evaluate
 
+RANDOM_STATE = 250
+
 KEY = "AIzaSyDE50N-WPn4s06OKhccYdDPXVnJ_k6O0bM"
 
 SESSION = "AJVsH2zeoLGLj2o5Zoy0tVFgxQ-e6pIazsG0uTKEPAZWIiQpXVPA8m4-Xk7yeKdQCjTmM0jcG6TzlfGy1B4RfIotow"
@@ -137,8 +139,8 @@ def upsample(df, labels, attribute):
             continue
         num_copies = len(df_classes[max_index]) // len(df_classes[i])
         remainder = len(df_classes[max_index]) % len(df_classes[i])
-        df_classes[i] = pd.concat([df_classes[i]]*num_copies + [df_classes[i].sample(n = remainder, replace=False)])
-    df_data = pd.concat(df_classes).sample(frac=1) #shuffle
+        df_classes[i] = pd.concat([df_classes[i]]*num_copies + [df_classes[i].sample(n = remainder, replace=False, random_state=RANDOM_STATE)])
+    df_data = pd.concat(df_classes).sample(frac=1, random_state=RANDOM_STATE) #shuffle
 
     return df_data
 

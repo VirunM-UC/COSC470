@@ -1,8 +1,8 @@
 import pandas as pd
-#import utils
+import utils
 for split in ["training", "validation", "testing"]:
     df_paris = pd.read_pickle(f"data-folders/paris-data/{split}.pkl")
-    df_global = pd.read_pickle(f"data-folders/fov90-data/{split}.pkl")
+    df_global = pd.read_pickle(f"data-folders/material-data/{split}.pkl")
     df_global = df_global.loc[:, ["City_Name", "POINT_X", "POINT_Y", "building_material", "image"]]
     df_paris = df_paris.rename(columns = {"mur": "building_material", "lat": "POINT_Y", "lon": "POINT_X"})
     translation = {
@@ -14,10 +14,10 @@ for split in ["training", "validation", "testing"]:
     df_paris = df_paris.loc[:, ["City_Name", "POINT_X", "POINT_Y", "building_material", "image"]]
     df = pd.concat([df_global, df_paris], ignore_index = True)
 
-    """
+    
     #upsample
     df.insert(0, "upsample", (df["City_Name"] == "paris"))
     df = utils.upsample(df, [False, True], "upsample")
     df.pop("upsample")
-    """
-    df.to_pickle(f"data-folders/hybrid2-data/{split}.pkl")
+    
+    df.to_pickle(f"data-folders/hybrid-data/{split}.pkl")
