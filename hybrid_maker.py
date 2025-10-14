@@ -16,8 +16,14 @@ for split in ["training", "validation", "testing"]:
 
     
     #upsample
-    df.insert(0, "upsample", (df["City_Name"] == "paris"))
-    df = utils.upsample(df, [False, True], "upsample")
-    df.pop("upsample")
+    df_brick = df.loc[df["building_material"] == "brick"]
+    df_cinder = df.loc[df["building_material"] == "cinder"]
+    df_class = [df_brick, df_cinder]
+    for i in range(len(df_class)):
+        df_class[i].insert(0, "upsample", (df_class[i]["City_Name"] == "paris"))
+        df_class[i] = utils.upsample(df_class[i], [False, True], "upsample")
+        df_class[i].pop("upsample")
+    df = pd.concat(df_class, ignore_index = True)
     
+    df = df.sample(frac=1, random_state=utils.RANDOM_STATE) #shuffle
     df.to_pickle(f"data-folders/hybrid-data/{split}.pkl")

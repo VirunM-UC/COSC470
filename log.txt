@@ -430,31 +430,33 @@ Created a combined dataset of paris and global images. For now I just added them
 Result on hybrid validation: 'eval_f1_brick': 0.82
 Result on global dataset: f1_brick: 0.667 (slight improvement from 0.60)
 Upsampled global images. 
-On upsampled hybrid validation: 'eval_accuracy': 0.84, 'eval_f1_macro': 0.82, 'eval_f1_cinder': 0.87, 'eval_f1_brick': 0.77
-On global dataset:
-global -                accuracy: 0.946, f1_macro: 0.894, f1_cinder: 0.968, f1_brick: 0.821
+Fixed upsampling so brick buildings are equally represented from paris ad globe.
+On hybrid: accuracy: 0.766, f1_macro: 0.766, f1_cinder: 0.762, f1_brick: 0.770
+On globe:  accuracy: 0.868, f1_macro: 0.748, f1_cinder: 0.922, f1_brick: 0.575
+
+bangkok -               accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+britishcolumbia -       accuracy: 0.636, f1_macro: 0.542, f1_cinder: 0.750, f1_brick: 0.333
+copenhagen -            accuracy: 0.600, f1_macro: 0.489, f1_cinder: 0.250, f1_brick: 0.727
+dhaka -                 accuracy: 0.846, f1_macro: 0.458, f1_cinder: 0.917, f1_brick: 0.000
+durban -                accuracy: 0.667, f1_macro: 0.400, f1_cinder: 0.800, f1_brick: 0.000
+harriscounty -          accuracy: 0.923, f1_macro: 0.812, f1_cinder: 0.667, f1_brick: 0.957
+jakarta -               accuracy: 0.923, f1_macro: 0.480, f1_cinder: 0.960, f1_brick: 0.000
+kualalumpur -           accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+manila -                accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+ocoa -                  accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
+phnompenh -             accuracy: 0.778, f1_macro: 0.438, f1_cinder: 0.875, f1_brick: 0.000
+queensland -            accuracy: 0.500, f1_macro: 0.451, f1_cinder: 0.615, f1_brick: 0.286
+queretaro -             accuracy: 0.833, f1_macro: 0.455, f1_cinder: 0.909, f1_brick: 0.000
+quito -                 accuracy: 0.935, f1_macro: 0.483, f1_cinder: 0.967, f1_brick: 0.000
+rajshahi -              accuracy: 0.818, f1_macro: 0.694, f1_cinder: 0.889, f1_brick: 0.500
+sliven -                accuracy: 1.000, f1_macro: 1.000, f1_cinder: 1.000, f1_brick: 1.000
 /
-E  sliven -             accuracy: 1.000, f1_macro: 1.000, f1_cinder: 1.000, f1_brick: 1.000
-A  phnompenh -          accuracy: 1.000, f1_macro: 1.000, f1_cinder: 1.000, f1_brick: 1.000
-SA quito -              accuracy: 0.989, f1_macro: 0.942, f1_cinder: 0.994, f1_brick: 0.889
-NA britishcolumbia -    accuracy: 0.909, f1_macro: 0.871, f1_cinder: 0.941, f1_brick: 0.800
-E  copenhagen -         accuracy: 0.867, f1_macro: 0.850, f1_cinder: 0.800, f1_brick: 0.900
-A  rajshahi -           accuracy: 0.909, f1_macro: 0.807, f1_cinder: 0.947, f1_brick: 0.667
-Au queensland -         accuracy: 0.800, f1_macro: 0.800, f1_cinder: 0.800, f1_brick: 0.800
-NA harriscounty -       accuracy: 0.846, f1_macro: 0.705, f1_cinder: 0.500, f1_brick: 0.909
-SA queretaro -          accuracy: 0.917, f1_macro: 0.478, f1_cinder: 0.957, f1_brick: 0.000
-A  dhaka -              accuracy: 0.923, f1_macro: 0.480, f1_cinder: 0.960, f1_brick: 0.000
-/
-(X) bangkok -           accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
-(X) durban -            accuracy: 0.778, f1_macro: 0.438, f1_cinder: 0.875, f1_brick: 0.000
-(X) jakarta -           accuracy: 0.923, f1_macro: 0.480, f1_cinder: 0.960, f1_brick: 0.000
-(X) kualalumpur -       accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
-(X) manila -            accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
-(X) mocoa -             accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
--
-E: 0.95, NA: 0.85, Au: 0.80, A: 0.55, SA: 0.44 (based on f1_brick)
-E: 0.90, Au: 0.80, NA: 0.65, A: 0.55, SA: 0.44  (based on lowest f1)
-E: 0.92, Au: 0.80, NA: 0.78, A: 0.76, SA: 0.71  (based on f1_macro)
+europe -                accuracy: 0.760, f1_macro: 0.760, f1_cinder: 0.769, f1_brick: 0.750
+north america -         accuracy: 0.792, f1_macro: 0.782, f1_cinder: 0.737, f1_brick: 0.828
+south america -         accuracy: 0.927, f1_macro: 0.481, f1_cinder: 0.962, f1_brick: 0.000
+australia -             accuracy: 0.500, f1_macro: 0.451, f1_cinder: 0.615, f1_brick: 0.286
+asia -                  accuracy: 0.912, f1_macro: 0.588, f1_cinder: 0.954, f1_brick: 0.222
+africa -                accuracy: 0.667, f1_macro: 0.400, f1_cinder: 0.800, f1_brick: 0.000
 
 
 Train and validate on regions:
@@ -466,35 +468,6 @@ Australia:      'eval_accuracy': 0.70, 'eval_f1_macro': 0.60, 'eval_f1_cinder': 
 Compare with by global model inference: 
 E: 0.78, NA: 0.73, Au: 0.49, A: 0.48, SA: 0.48 
 
-Second training attempt with hybrid dataset.
-global -                accuracy: 0.953, f1_macro: 0.905, f1_cinder: 0.973, f1_brick: 0.838
-/
-E sliven -              accuracy: 1.000, f1_macro: 1.000, f1_cinder: 1.000, f1_brick: 1.000
-SA quito -              accuracy: 1.000, f1_macro: 1.000, f1_cinder: 1.000, f1_brick: 1.000
-Au queensland -         accuracy: 0.900, f1_macro: 0.899, f1_cinder: 0.909, f1_brick: 0.889
-NA britishcolumbia -    accuracy: 0.909, f1_macro: 0.871, f1_cinder: 0.941, f1_brick: 0.800
-A rajshahi -            accuracy: 0.909, f1_macro: 0.807, f1_cinder: 0.947, f1_brick: 0.667
-A phnompenh -           accuracy: 0.889, f1_macro: 0.800, f1_cinder: 0.933, f1_brick: 0.667
-E copenhagen -          accuracy: 0.800, f1_macro: 0.785, f1_cinder: 0.727, f1_brick: 0.842
-NA harriscounty -       accuracy: 0.846, f1_macro: 0.705, f1_cinder: 0.500, f1_brick: 0.909
-A dhaka -               accuracy: 0.923, f1_macro: 0.480, f1_cinder: 0.960, f1_brick: 0.000
-SA queretaro -          accuracy: 0.917, f1_macro: 0.478, f1_cinder: 0.957, f1_brick: 0.000
-/
-bangkok -               accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
-durban -                accuracy: 0.889, f1_macro: 0.471, f1_cinder: 0.941, f1_brick: 0.000
-jakarta -               accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
-kualalumpur -           accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
-manila -                accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
-mocoa -                 accuracy: 1.000, f1_macro: 0.500, f1_cinder: 1.000, f1_brick: 0.000
--
-E: 0.89, Au: 0.89, NA: 0.78, SA: 0.73, A: 0.69 (based on f1_macro)
--
-europe -                accuracy: 0.880, f1_macro: 0.877, f1_cinder: 0.897, f1_brick: 0.857
-north america -         accuracy: 0.875, f1_macro: 0.873, f1_cinder: 0.857, f1_brick: 0.889
-south america -         accuracy: 0.991, f1_macro: 0.942, f1_cinder: 0.995, f1_brick: 0.889
-australia -             accuracy: 0.900, f1_macro: 0.899, f1_cinder: 0.909, f1_brick: 0.889
-asia -                  accuracy: 0.963, f1_macro: 0.776, f1_cinder: 0.980, f1_brick: 0.571
-africa -                accuracy: 0.889, f1_macro: 0.471, f1_cinder: 0.941, f1_brick: 0.000
 
 Tests:
 see how well object detection works on the equirectangular projection
