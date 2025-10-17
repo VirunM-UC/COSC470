@@ -44,7 +44,7 @@ def df_to_hfds_building_material(df, mode, df_bounding_boxes = None, df_segmasks
     df: dataframe
     mode: string, either "train" or "validate"
     """
-    #df = df[df["City_Name"].map(lambda x: (x in CITIES))] #filter everything that is not in CITIES
+    df = df[df["City_Name"].map(lambda x: (x in CITIES))] #filter everything that is not in CITIES
 
     df_data = df.loc[:, ["image", COLUMN_NAME]]
     df_data = df_data[df_data[COLUMN_NAME].map(lambda x: (x in LABELS))] #filter everything that is not in LABELS
@@ -180,11 +180,11 @@ if __name__ == "__main__":
     for i, label in enumerate(LABELS):
         LABEL2ID[label] = str(i)
         ID2LABEL[str(i)] = label
-    #CITIES = []
+    CITIES = ["quito", "mocoa"]
     
     model_name = "vit"
-    data_folder = "data-folders/hybrid-data/"
+    data_folder = "data-folders/material-data/"
     #bounding_boxes_fname = "bounding_boxes.csv"
     #segmasks_fname = "semantic_masks.pkl"
-    model_output_dir = f"model-folders/{model_name}-building_material-hybrid_model"
+    model_output_dir = f"model-folders/{model_name}-building_material-local_model"
     main(model_name, data_folder, model_output_dir)

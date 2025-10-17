@@ -419,8 +419,8 @@ NA: 0.65,  E: 0.59, Au: 0.49, SA: 0.48, A: 0.46 (based on f1_macro)
 -
 By region inference (rather than by city) (to compare with isolated region training)
 europe -        accuracy: 0.800, f1_macro: 0.788, f1_cinder: 0.839, f1_brick: 0.737
-north america - accuracy: 0.750, f1_macro: 0.733, f1_cinder: 0.667, f1_brick: 0.800
-south america - accuracy: 0.945, f1_macro: 0.486, f1_cinder: 0.972, f1_brick: 0.000
+north america - accuracy: 0.861, f1_macro: 0.860, f1_cinder: 0.872, f1_brick: 0.848
+south america - accuracy: 0.959, f1_macro: 0.489, f1_cinder: 0.979, f1_brick: 0.000
 australia -     accuracy: 0.500, f1_macro: 0.495, f1_cinder: 0.545, f1_brick: 0.444
 asia -          accuracy: 0.950, f1_macro: 0.487, f1_cinder: 0.974, f1_brick: 0.000
 africa -        accuracy: 0.889, f1_macro: 0.471, f1_cinder: 0.941, f1_brick: 0.000
@@ -452,8 +452,8 @@ rajshahi -              accuracy: 0.818, f1_macro: 0.694, f1_cinder: 0.889, f1_b
 sliven -                accuracy: 1.000, f1_macro: 1.000, f1_cinder: 1.000, f1_brick: 1.000
 /
 europe -                accuracy: 0.760, f1_macro: 0.760, f1_cinder: 0.769, f1_brick: 0.750
-north america -         accuracy: 0.792, f1_macro: 0.782, f1_cinder: 0.737, f1_brick: 0.828
-south america -         accuracy: 0.927, f1_macro: 0.481, f1_cinder: 0.962, f1_brick: 0.000
+north america -         accuracy: 0.806, f1_macro: 0.802, f1_cinder: 0.829, f1_brick: 0.774
+south america -         accuracy: 0.938, f1_macro: 0.484, f1_cinder: 0.968, f1_brick: 0.000
 australia -             accuracy: 0.500, f1_macro: 0.451, f1_cinder: 0.615, f1_brick: 0.286
 asia -                  accuracy: 0.912, f1_macro: 0.588, f1_cinder: 0.954, f1_brick: 0.222
 africa -                accuracy: 0.667, f1_macro: 0.400, f1_cinder: 0.800, f1_brick: 0.000
@@ -461,8 +461,8 @@ africa -                accuracy: 0.667, f1_macro: 0.400, f1_cinder: 0.800, f1_b
 
 Train and validate on regions:
 Europe:         'eval_accuracy': 0.79, 'eval_f1_macro': 0.77, 'eval_f1_cinder': 0.83, 'eval_f1_brick': 0.70
-North America:  'eval_accuracy': 0.65, 'eval_f1_macro': 0.54, 'eval_f1_cinder': 0.33, 'eval_f1_brick': 0.76
-South America:  'eval_accuracy': 0.98, 'eval_f1_macro': 0.49, 'eval_f1_cinder': 0.99, 'eval_f1_brick': 0.0
+North America:  'eval_accuracy': 0.63, 'eval_f1_macro': 0.63, 'eval_f1_cinder': 0.58, 'eval_f1_brick': 0.68
+South America:  'eval_accuracy': 0.95, 'eval_f1_macro': 0.48, 'eval_f1_cinder': 0.97, 'eval_f1_brick': 0.0
 Asia:           'eval_accuracy': 0.95, 'eval_f1_macro': 0.65, 'eval_f1_cinder': 0.97, 'eval_f1_brick': 0.33
 Australia:      'eval_accuracy': 0.70, 'eval_f1_macro': 0.60, 'eval_f1_cinder': 0.80, 'eval_f1_brick': 0.40
 Compare with by global model inference: 

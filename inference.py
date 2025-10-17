@@ -78,8 +78,8 @@ def main(data_folder, file_path, attribute, model_path, is_french = False):
 if __name__ == "__main__":
     REGIONS = {
         "europe": ["copenhagen", "sliven"],
-        "north america": ["harriscounty", "britishcolumbia"],
-        "south america": ["queretaro", "quito", "mocoa"],
+        "north america": ["harriscounty", "britishcolumbia", "queretaro"],
+        "south america": ["quito", "mocoa"],
         "australia": ["queensland"],
         "asia": ["dhaka", "phnompenh", "rajshahi", "bangkok", "jakarta", "kualalumpur", "manila"],
         "africa": ["durban"]
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     #attribute = "structure_type"
     #attribute = "building_conditions"
     data_folder = "data-folders/material-data/" #material-data is the stratified global dataset for material
-    model_path = f"model-folders/vit-building_material-hybrid_model/checkpoint-516"
+    model_path = f"model-folders/vit-building_material-model/checkpoint-63"
     file_path = f"excel-outputs/vit_{attribute}.xlsx"
     
     main(data_folder, file_path, attribute, model_path, is_french = False)
