@@ -6,9 +6,9 @@ import evaluate
 
 RANDOM_STATE = 250
 
-KEY = "AIzaSyDE50N-WPn4s06OKhccYdDPXVnJ_k6O0bM"
+KEY = None
 
-SESSION = "AJVsH2zeoLGLj2o5Zoy0tVFgxQ-e6pIazsG0uTKEPAZWIiQpXVPA8m4-Xk7yeKdQCjTmM0jcG6TzlfGy1B4RfIotow"
+SESSION = None
 
 CHECKPOINT = {
     "vit": "google/vit-base-patch16-224-in21k", #ViT (base: 350MB)
@@ -132,10 +132,12 @@ def df_to_excel(df, file_path):
 def upsample(df, labels, attribute):
     df_classes = []
     for i in range(len(labels)):
-        df_classes.append(df.loc[df[attribute] == i])
+        df_classes.append(df.loc[df[attribute] == labels[i]])
     max_index = max(range(len(labels)), key = lambda x: len(df_classes[x]))
     for i in range(len(labels)):
         if i == max_index:
+            continue
+        if len(df_classes[i]) == 0:
             continue
         num_copies = len(df_classes[max_index]) // len(df_classes[i])
         remainder = len(df_classes[max_index]) % len(df_classes[i])

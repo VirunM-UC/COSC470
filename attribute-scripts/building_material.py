@@ -44,9 +44,9 @@ def df_to_hfds_building_material(df, mode, df_bounding_boxes = None, df_segmasks
     df: dataframe
     mode: string, either "train" or "validate"
     """
-    df = df[df["City_Name"].map(lambda x: (x in CITIES))] #filter everything that is not in CITIES
+    #df = df[df["City_Name"].map(lambda x: (x in CITIES))] #filter everything that is not in CITIES
 
-    df_data = df.loc[:, ["image", COLUMN_NAME]]
+    df_data = df.loc[:, ["image", COLUMN_NAME, "City_Name"]]
     df_data = df_data[df_data[COLUMN_NAME].map(lambda x: (x in LABELS))] #filter everything that is not in LABELS
     df_data[COLUMN_NAME] = df_data[COLUMN_NAME].map(lambda x: int(LABEL2ID[x])).astype("uint8")
 
@@ -70,7 +70,7 @@ def df_to_hfds_building_material(df, mode, df_bounding_boxes = None, df_segmasks
 
     #Upsampling
     if mode == "train":
-        df_data = utils.upsample(df_data, LABELS, COLUMN_NAME)
+        df_data = utils.upsample(df_data, range(len(LABELS)), COLUMN_NAME)
         print("train_size (upsampled): ", len(df_data))
         print(df_data[COLUMN_NAME].value_counts())
 
@@ -170,7 +170,7 @@ def main(model_name, data_folder, model_output_dir, bounding_boxes_fname = None,
     trainer.train()
 
 if __name__ == "__main__":
-    #LABELS = ["beton", "briques"] #LABELS = ["beton", "briques", "bois"] 
+    #LABELS = ["beton", "briques"] 
     #COLUMN_NAME = "mur" 
     LABELS = ["cinder", "brick"] 
     COLUMN_NAME = "building_material"
@@ -180,11 +180,11 @@ if __name__ == "__main__":
     for i, label in enumerate(LABELS):
         LABEL2ID[label] = str(i)
         ID2LABEL[str(i)] = label
-    CITIES = ["quito", "mocoa"]
+    #CITIES = ["quito", "mocoa"]
     
     model_name = "vit"
     data_folder = "data-folders/material-data/"
     #bounding_boxes_fname = "bounding_boxes.csv"
     #segmasks_fname = "semantic_masks.pkl"
-    model_output_dir = f"model-folders/{model_name}-building_material-local_model"
+    model_output_dir = f"model-folders/{model_name}-building_material-test_model"
     main(model_name, data_folder, model_output_dir)
